@@ -13,8 +13,15 @@ export default {
 
 <style>
 body {
+  width: 100vw;
+  height: 100vh;
+}
+.main {
+  width: 100%;
+  height: 100%;
+}
+* {
   margin: 0;
   overflow: hidden;
-  background-color: #c6e2ff;
 }
 </style>
