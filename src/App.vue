@@ -1,7 +1,6 @@
 <template>
   <div class='main'>
-    <router-view name='bground'></router-view>
-    <router-view name='card'></router-view>
+    <router-view name='cubic'></router-view>
   </div>
 </template>
 

@@ -1,15 +1,13 @@
 <template>
-  <div class='bground'></div>
+  <div class='line-bg'></div>
 </template>
 
 <script>
-/* eslint-disable global-require */
-
 import * as THREE from 'three';
-import Three from '../three';
+import Three from './three';
 
 export default {
-  name: 'lineBg',
+  name: 'line',
   data() {
     return {
       three: null,
@@ -78,7 +76,7 @@ export default {
 </script>
 
 <style>
-.bground {
+.line-bg {
   width: 100%;
   height: 100%;
   background-image: linear-gradient(45deg, rgba(0,0,0,1) 0%, rgba(69,69,122,1) 100%);

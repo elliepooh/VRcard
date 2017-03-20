@@ -1,6 +1,9 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import lineBg from '@/components/bgrounds/Line';
+
+import Line from '@/components/Line';
+import Cubic from '@/components/Cubic';
+
 
 Vue.use(Router);
 
@@ -8,9 +11,9 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'main',
       components: {
-        bground: lineBg,
+        line: Line,
+        cubic: Cubic,
       },
     },
   ],
