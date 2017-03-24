@@ -4,7 +4,7 @@
 
 <script>
 import * as THREE from 'three';
-import Three from './three';
+import Three from './Three';
 
 export default {
   name: 'cubic',
