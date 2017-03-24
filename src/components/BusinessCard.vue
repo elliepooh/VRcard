@@ -1,10 +1,10 @@
 <template lang='pug'>
-  .land
+  .business-card
     a-scene
       a-assets
-        img(id='sechelt' src='https://cdn.aframe.io/360-image-gallery-boilerplate/img/sechelt.jpg')
+        img#panorama
 
-      a-sky(radius='10' src='#sechelt')
+      a-sky(radius='10' src='#panorama')
 
       a-camera
         a-cursor(id='cursor')
@@ -15,13 +15,20 @@
 </template>
 
 <script>
+import Firebase from '@/appconfig/firebase';
+
 export default {
-  name: 'land',
+  name: 'businessCard',
+  mounted() {
+    Firebase.panoramasRef.child('mountains.jpg').getDownloadURL().then((url) => {
+      this.$el.querySelector('#panorama').setAttribute('src', url);
+    });
+  },
 };
 </script>
 
 <style>
-.land {
+.business-card {
   width: 100%;
   height: 100%;
   position: absolute;
