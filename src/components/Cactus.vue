@@ -11,6 +11,7 @@ export default {
   data() {
     return {
       three: null,
+      cactus: null,
     };
   },
   mounted() {
@@ -25,8 +26,13 @@ export default {
   methods: {
     init() {
       this.three.init();
-      const light = new THREE.PointLight({ intensity: 0.5 });
+
+      const ambientLight = new THREE.AmbientLight();
+      this.three.scene.add(ambientLight);
+
+      const light = new THREE.DirectionalLight();
       light.position.set(1000, 1000, 2000);
+      light.castShadow = true;
       this.three.scene.add(light);
       this.draw();
     },
@@ -45,21 +51,25 @@ export default {
       geometry.computeFaceNormals();
       geometry.computeVertexNormals(true);
 
-      const group = new THREE.Group();
-      this.three.scene.add(group);
+      this.cactus = new THREE.Group();
+      this.three.scene.add(this.cactus);
 
       const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
         color: 0xfefefe,
         wireframe: true,
         opacity: 0.5,
       }));
-      group.add(mesh);
+      this.cactus.add(mesh);
 
       const innerGeometry = new THREE.SphereGeometry(220, 5, 5);
       const innerSphere = new THREE.Mesh(innerGeometry,
-        new THREE.MeshBasicMaterial({ color: 0x68be83 }));
+        new THREE.MeshStandardMaterial({
+          color: 0x68be83,
+          roughness: 0.8,
+          shading: THREE.FlatShading,
+        }));
 
-      mesh.add(innerSphere);
+      this.cactus.add(innerSphere);
 
       for (let f = 0, fl = geometry.faces.length; f < fl; f += 1) {
         const face = geometry.faces[f];
@@ -102,6 +112,8 @@ export default {
     },
     animate() {
       requestAnimationFrame(this.animate.bind(this));
+      this.cactus.rotation.x -= 0.01;
+      this.cactus.rotation.y -= 0.02;
       this.three.render();
     },
   },
