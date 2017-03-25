@@ -20,7 +20,7 @@ export default {
 }
 .nav-link {
   text-decoration: none;
-  color: #fff;
   margin-right: 1rem;
+  cursor: pointer;
 }
 </style>
