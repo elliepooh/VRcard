@@ -1,6 +1,5 @@
 <template lang='pug'>
   .nav
-    router-link.nav-link(to='/cactus') Cactus
     router-link.nav-link(to='/businessCard') Business Card
     router-link.nav-link(to='/card') Card
 </template>
