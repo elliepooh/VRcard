@@ -7,6 +7,16 @@
       material='color: #FFF' position='0 2 0')
         a-plane.info-photo(width='1.8' position='0 0.7 0.01')
 
+      a-entity.contacts(position='1.3 2 0' width='auto' height='auto')
+        a-entity.contacts-email(geometry='primitive: plane; width: 0.5; height: 0.15'
+        material='color: #333' position='0 0.6 0.1' text='color: #FFF; value: Email; width: 2; align: center;')
+
+        a-entity.contacts-phone(geometry='primitive: plane; width: 0.5; height: 0.15'
+        material='color: #333' position='0 0.8 0.1' text='color: #FFF; value: Phone; width: 2; align: center;')
+
+        a-entity.contacts-website(geometry='primitive: plane; width: 0.5; height: 0.15'
+        material='color: #333' position='0 1 0.1' text='color: #FFF; value: Website; width: 2; align: center;')
+
       a-sky(radius='10')
       a-entity(position='0 2 2')
         a-entity(camera look-controls)
@@ -33,6 +43,9 @@ export default {
       fontColor: '#797979',
       name: '',
       description: '',
+      email: '',
+      phone: '',
+      website: '',
     };
   },
   created() {
@@ -57,8 +70,12 @@ export default {
     Firebase.dbBusinessRef.child('test').once('value').then((snapshot) => {
       this.name = snapshot.val().name;
       this.description = snapshot.val().description;
+      this.email = snapshot.val().email;
+      this.phone = snapshot.val().phone;
+      this.website = snapshot.val().website;
 
       this.createCard();
+      this.addContacts();
     });
   },
   methods: {
@@ -108,6 +125,30 @@ export default {
       });
       descriptionText.setAttribute('position', { x: 0.05, y: -0.5, z: 0.01 });
       this.infoEl.appendChild(descriptionText);
+    },
+    addContacts() {
+      const contacts = [this.email, this.phone, this.website];
+      const selectors = ['.contacts-email', '.contacts-phone', '.contacts-website'];
+      for (let i = 0; i < 3; i += 1) {
+        const contact = document.createElement('a-entity');
+        contact.setAttribute('text', {
+          color: this.fontColor,
+          value: contacts[i],
+          width: 1.5,
+          letterSpacing: 1,
+          align: 'center',
+          font: robotoFont,
+          fontImage: robotoPng,
+        });
+        contact.setAttribute('geometry', {
+          primitive: 'plane',
+          width: 0.8,
+          height: 0.15,
+        });
+        contact.setAttribute('material', { color: '#FFF' });
+        contact.setAttribute('position', { x: 0.65, y: 0, z: 0.01 });
+        this.sceneEl.querySelector(selectors[i]).appendChild(contact);
+      }
     },
   },
 };
