@@ -8,7 +8,9 @@ export default class Three {
     transparent = false,
     alpha = 1.0,
     color = 0xffffff,
-    cameraPosition = 100,
+    cameraPositionX = 0,
+    cameraPositionY = 0,
+    cameraPositionZ = 20,
   }) {
     this.scene = null;
     this.camera = null;
@@ -22,13 +24,15 @@ export default class Three {
     this.transparent = transparent;
     this.alpha = alpha;
     this.color = color;
-    this.cameraPosition = cameraPosition;
+    this.cameraPositionX = cameraPositionX;
+    this.cameraPositionY = cameraPositionY;
+    this.cameraPositionZ = cameraPositionZ;
   }
   init() {
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(75, this.width / this.height, 0.1, 1000);
+    this.camera = new THREE.PerspectiveCamera(50, this.width / this.height, 0.1, 10000);
+    this.camera.position.set(this.cameraPositionX, this.cameraPositionY, this.cameraPositionZ);
     this.camera.lookAt(this.scene.position);
-    this.camera.position.z = this.cameraPosition;
 
     this.renderer = new THREE.WebGLRenderer({ alpha: this.transparent });
     this.renderer.setPixelRatio(window.devicePixelRatio);
