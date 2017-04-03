@@ -3,6 +3,7 @@
 </template>
 
 <script>
+/* eslint-disable no-param-reassign */
 import * as THREE from 'three';
 import Three from '../Three';
 
@@ -11,12 +12,21 @@ export default {
   data() {
     return {
       three: null,
+      raycaster: null,
+
       chameleon: null,
+      head: null,
+
+      branch: null,
+
+      fly: null,
+      rightWing: null,
+      leftWing: null,
+      wingAngle: 0,
+
       material: null,
       mouse: null,
 
-      mouseX: 0,
-      mouseY: 0,
       width: 0,
       height: 0,
     };
@@ -26,7 +36,7 @@ export default {
       container: this.$el,
       color: 0xF2A9B4,
       cameraPositionX: 30,
-      cameraPositionY: 10,
+      cameraPositionY: 15,
       cameraPositionZ: 20,
     });
     this.width = this.$el.clientWidth;
@@ -38,11 +48,15 @@ export default {
   methods: {
     init() {
       this.three.init();
+      this.raycaster = new THREE.Raycaster();
+      this.mouse = new THREE.Vector2();
 
       this.addLights();
       this.drawChameleon();
+      this.drawBranch();
+      this.drawFly();
 
-      document.addEventListener('mousemove', this.onMouseMove);
+      window.addEventListener('mousemove', this.onMouseMove);
     },
     addLights() {
       const light = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
@@ -58,12 +72,12 @@ export default {
         intensity: 0.6,
       });
       directLight2.castShadow = true;
-      directLight2.position.set(-14, 16, 7);
+      directLight2.position.set(-27, 18, 6);
       this.three.scene.add(directLight2);
     },
     drawChameleon() {
       this.chameleon = new THREE.Object3D();
-      this.chameleon.position.set(0, 2, 5.7);
+      this.chameleon.position.set(-1, 3, 2.7);
       this.chameleon.rotation.set(this.rad(18.84), 0, this.rad(2.2));
       this.three.scene.add(this.chameleon);
 
@@ -77,6 +91,56 @@ export default {
       this.drawBody();
       this.drawTail();
       this.drawLegs();
+
+      this.chameleon.traverse((object) => {
+        if (object instanceof THREE.Mesh) {
+          object.castShadow = true;
+          object.receiveShadow = true;
+        }
+      });
+    },
+    drawBranch() {
+      const branchGeometry = new THREE.CylinderGeometry(0.76, 1.12, 2.14, 5);
+      const branchMaterial = new THREE.MeshStandardMaterial({
+        color: 0x17B26F,
+        roughness: 1,
+        shading: THREE.FlatShading,
+      });
+      this.branch = new THREE.Mesh(branchGeometry, branchMaterial);
+      this.branch.position.set(-2.76, -5.67, -7.86);
+      this.branch.rotation.set(this.rad(85.18), this.rad(4.14), this.rad(-20.4));
+      this.branch.scale.set(3.78, 11.92, 2.72);
+      this.branch.castShadow = true;
+      this.branch.receiveShadow = true;
+      this.three.scene.add(this.branch);
+    },
+    drawFly() {
+      const flyGeometry = new THREE.BoxGeometry(1, 1, 1);
+      const flyMaterial = new THREE.MeshStandardMaterial({
+        color: 0x3F3F3F,
+        roughness: 1,
+        shading: THREE.FlatShading,
+      });
+      this.fly = new THREE.Mesh(flyGeometry, flyMaterial);
+      this.fly.position.set(0, 12.71, 19.08);
+      this.three.scene.add(this.fly);
+
+      const wingGeometry = new THREE.CylinderGeometry(0.42, 0.08, 1.26, 4);
+      const wingMaterial = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        roughness: 1,
+        shading: THREE.FlatShading,
+      });
+
+      this.rightWing = new THREE.Mesh(wingGeometry, wingMaterial);
+      this.rightWing.position.set(0, 0.2, 0.6);
+      this.rightWing.rotation.set(Math.PI / 4, 0, Math.PI / 4);
+      this.rightWing.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, 0.21, 0.04));
+      this.fly.add(this.rightWing);
+
+      this.leftWing = this.rightWing.clone();
+      this.leftWing.position.z = -this.rightWing.position.z;
+      this.fly.add(this.leftWing);
     },
     drawHead() {
       const headGeometry = new THREE.SphereGeometry(5, 4, 4);
@@ -110,9 +174,9 @@ export default {
       rightEyeWhite.position.set(0.02, -0.37, -0.06);
       rightEye.add(rightEyeWhite);
 
-      this.rightEyeBlack = new THREE.Mesh(eyeBlackGeometry, eyeBlackMaterial);
-      this.rightEyeBlack.position.set(-0.01, -0.27, -0.01);
-      rightEyeWhite.add(this.rightEyeBlack);
+      const rightEyeBlack = new THREE.Mesh(eyeBlackGeometry, eyeBlackMaterial);
+      rightEyeBlack.position.set(-0.01, -0.27, -0.01);
+      rightEyeWhite.add(rightEyeBlack);
 
       const leftEye = new THREE.Mesh(eyeGeometry, this.material);
       leftEye.position.set(-1.62, 1.47, -2.92);
@@ -234,20 +298,47 @@ export default {
       this.chameleon.add(backLeftLeg);
     },
     onMouseMove(event) {
-      this.mouseX = ((event.clientX / this.width) * 2) - 1;
-      this.mouseY = (-(event.clientY / this.height) * 2) + 1;
+      this.mouse.x = ((event.clientX / this.width) * 2) - 1;
+      this.mouse.y = (-(event.clientY / this.height) * 2) + 1;
     },
     changeColor() {
-      const time = Date.now() * 0.00005;
-      const h = ((360 * (1.0 + time)) % 360) / 360;
-      this.material.color.setHSL(h, 1.0, 0.6);
+      this.raycaster.setFromCamera(this.mouse, this.three.camera);
+      const intersects = this.raycaster.intersectObjects(this.chameleon.children, true);
+
+      if (intersects.length > 0) {
+        if (intersects[0].object.material.color.getHexString() === 'ffffff' ||
+        intersects[0].object.material.color.getHexString() === '3f3f3f') return;
+
+        const time = Date.now() * 0.00005;
+        const h = ((360 * (1.0 + time)) % 360) / 360;
+        intersects[0].object.material.color.setHSL(h, 1.0, 0.6);
+      }
     },
-    moveHead() {
+    rotateHead() {
+      this.head.lookAt(this.fly.position);
+      this.head.rotation.x += this.rad(90);
+      this.head.rotation.y += this.rad(45);
+      this.head.position.y = 1;
+    },
+    moveFlyWings() {
+      this.wingAngle += 0.5;
+      const wingAmplitude = Math.PI / 8;
+      this.rightWing.rotation.x = (Math.PI / 4) - (Math.cos(this.wingAngle) * wingAmplitude);
+      this.leftWing.rotation.x = (-Math.PI / 4) + (Math.cos(this.wingAngle) * wingAmplitude);
+    },
+    moveFly() {
+      const timer = 0.0001 * Date.now();
+      this.fly.position.x = 4 * Math.cos(timer * 3);
+      this.fly.position.y = 5 * Math.sin(timer * 6);
     },
     animate() {
       requestAnimationFrame(this.animate.bind(this));
 
-      this.moveHead();
+      this.changeColor();
+      this.rotateHead();
+
+      this.moveFlyWings();
+      this.moveFly();
 
       this.three.render();
     },
