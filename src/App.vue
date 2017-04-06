@@ -1,33 +1,45 @@
 <template lang='pug'>
   .main
-    card-nav
     router-view
 </template>
 
 <script>
-import CardNav from './components/CardNav';
-
 export default {
   name: 'app',
-  components: {
-    CardNav,
-  },
 };
 </script>
 
 <style>
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&subset=cyrillic');
+
 * {
   margin: 0;
   overflow: hidden;
 }
+html {
+  font-size: 62.5%;
+}
 body {
   width: 100vw;
   height: 100vh;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 300;
+}
+::-webkit-input-placeholder {
+  color: #4E33AF;
+}
+::-moz-placeholder {
+  color: #4E33AF;
+}
+:-ms-input-placeholder {
+  color: #4E33AF;
+}
+:-moz-placeholder {
+  color: #4E33AF;
 }
 .main {
   width: 100%;
   height: 100%;
-  position: relative;
-  background-color: #6957DB;
 }
 </style>
