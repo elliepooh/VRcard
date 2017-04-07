@@ -14,7 +14,7 @@ export default {
 
 * {
   margin: 0;
-  overflow: hidden;
+  padding: 0;
 }
 html {
   font-size: 62.5%;
@@ -25,6 +25,7 @@ body {
   font-family: 'Roboto', sans-serif;
   font-size: 1.6rem;
   font-weight: 300;
+  overflow: hidden;
 }
 ::-webkit-input-placeholder {
   color: #4E33AF;
