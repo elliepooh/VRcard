@@ -30,7 +30,7 @@
 
 <script>
 import router from '@/router';
-import Firebase from '../appconfig/firebase';
+import Firebase from '@/appconfig/firebase';
 
 export default {
   name: 'signIn',
@@ -137,6 +137,7 @@ export default {
   cursor: pointer;
   display: flex;
   align-items: center;
+  color: #fff;
 }
 .logo__link {
   display: block;
@@ -145,8 +146,7 @@ export default {
   margin-right: 1rem;
   background: url('../assets/img/logo.svg') no-repeat center / contain;
 }
-.logo__name {
-  margin: 0;
+.logo__title {
   font-size: 3rem;
   font-weight: 500;
   letter-spacing: 0.4rem;
