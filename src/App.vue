@@ -4,8 +4,31 @@
 </template>
 
 <script>
+import router from '@/router';
+import Firebase from '@/appconfig/firebase';
+
 export default {
   name: 'app',
+  data() {
+    return {
+      user: null,
+    };
+  },
+  created() {
+    Firebase.auth.onAuthStateChanged((user) => {
+      if (user) {
+        this.user = user;
+        router.push({
+          path: 'dashboard',
+          params: {
+            user: this.user,
+          },
+        });
+      } else {
+        router.push('signin');
+      }
+    });
+  },
 };
 </script>
 
