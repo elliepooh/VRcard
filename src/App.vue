@@ -15,19 +15,28 @@ export default {
     };
   },
   created() {
+    this.routeSignin();
     Firebase.auth.onAuthStateChanged((user) => {
       if (user) {
         this.user = user;
-        router.push({
-          path: 'dashboard',
-          params: {
-            user: this.user,
-          },
-        });
+        this.routeDashboard();
       } else {
-        router.push('signin');
+        this.routeSignin();
       }
     });
+  },
+  methods: {
+    routeSignin() {
+      router.push('/signin');
+    },
+    routeDashboard() {
+      router.push({
+        name: 'dashboard',
+        params: {
+          user: this.user,
+        },
+      });
+    },
   },
 };
 </script>
