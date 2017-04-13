@@ -14,27 +14,19 @@ export default {
       user: null,
     };
   },
-  created() {
-    this.routeSignin();
+  mounted() {
     Firebase.auth.onAuthStateChanged((user) => {
       if (user) {
         this.user = user;
         this.routeDashboard();
-      } else {
-        this.routeSignin();
       }
     });
+    if (this.user) this.routeDashboard();
   },
   methods: {
-    routeSignin() {
-      router.push('/signin');
-    },
     routeDashboard() {
       router.push({
         name: 'dashboard',
-        params: {
-          user: this.user,
-        },
       });
     },
   },
