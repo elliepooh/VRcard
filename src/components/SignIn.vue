@@ -144,7 +144,7 @@ export default {
   width: 7rem;
   height: 7rem;
   margin-right: 1rem;
-  background: url('../assets/img/logo.svg') no-repeat center / contain;
+  background: url('../assets/icons/logo.svg') no-repeat center / contain;
 }
 .logo__title {
   font-size: 3rem;
@@ -191,7 +191,7 @@ export default {
   width: 5rem;
   height: 5rem;
   border-radius: 50%;
-  background: #fff url('../assets/img/send.svg') no-repeat 60% center / 60%;
+  background: #fff url('../assets/icons/send.svg') no-repeat 60% center / 60%;
   cursor: pointer;
 }
 .form-notification {
