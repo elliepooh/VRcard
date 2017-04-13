@@ -11,26 +11,26 @@
     .dashboard__gallery
       transition(name='show-notification')
         .dashboard__notification(v-if='showMessage') You have {{ limit }} cards limit
-      .dashboard__actions
-        .actions__add
-          a.dashboard__btn.btn-add(@click='addCard'
-        v-bind:class='{ "btn-add--active": chooseCard }')
-        transition-group(name='toggle-choose' tag='div')
-          a.dashboard__btn.btn-business(v-if='chooseCard' @click='addBusinessCard' key='business')
-          a.dashboard__btn.btn-greeting(v-if='chooseCard' @click='addGreetingCard' key='greeting')
-        a.dashboard__btn.btn-preview
-      .gallery__card(v-for='card in activeCards')
-        figure.card__preview
-          img.card__img
-        .card__content
-          h3.card__title
-          p.cart__text
-        a.card__btn-view
+      transition(name='toggle-actions')
+        .dashboard__actions(v-if='!showSettings')
+          .actions__add
+            a.dashboard__btn.btn-add(@click='addCard'
+          v-bind:class='{ "btn-add--active": chooseCard }')
+          transition-group(name='toggle-choose' tag='div')
+            a.dashboard__btn.btn-business(v-if='chooseCard' @click='addBusinessCard' key='business')
+            a.dashboard__btn.btn-greeting(v-if='chooseCard' @click='addGreetingCard' key='greeting')
+          router-link.dashboard__btn.btn-preview(to='{ name: "business-card", params: "user" }')
+      transition(name='toggle-cards')
+        .gallery__card(v-if='!showSettings' v-for='card in activeCards')
+          figure.card__preview
+            img.card__img
+          .card__content
+            h3.card__title
+            p.cart__text
+          a.card__btn-view
       nav.dashboard__settings
         a.dashboard__btn.btn-home.dashboard__btn--active
-        a.dashboard__btn.btn-basic
-        a.dashboard__btn.btn-person
-        a.dashboard__btn.btn-company
+        a.dashboard__btn.btn-settings(@click='showSettings = !showSettings')
     nav.dashboard__pagination
       a.pagination__point(v-for='card in activeCards')
 </template>
@@ -40,19 +40,25 @@ import Firebase from '@/appconfig/firebase';
 
 export default {
   name: 'dashboard',
-  props: ['user'],
   data() {
     return {
+      user: null,
       userRef: null,
       limit: 0,
       activeCards: 1,
       chooseCard: false,
       showMessage: false,
+      showSettings: false,
     };
   },
   mounted() {
-    this.userRef = Firebase.dbUsersRef.child(this.convertEmail(this.user.email));
-    this.checkCardLimit();
+    Firebase.auth.onAuthStateChanged((user) => {
+      if (user) {
+        this.user = user;
+        this.userRef = Firebase.dbUsersRef.child(this.convertEmail(this.user.email));
+        this.checkCardLimit();
+      }
+    });
   },
   methods: {
     addCard() {
@@ -68,6 +74,7 @@ export default {
         this.activeCards += 1;
         this.limit -= 1;
         this.userRef.child('cardLimit').set(this.limit);
+        this.showSettings = true;
       } else {
         this.showMessage = true;
       }
@@ -162,7 +169,11 @@ $border-radius: 3px;
 .show-notification-enter-active,
 .show-notification-leave-active,
 .toggle-choose-enter-active,
-.toggle-choose-leave-active, {
+.toggle-choose-leave-active,
+.toggle-actions-enter-active,
+.toggle-actions-leave-active,
+.toggle-cards-enter-active,
+.toggle-cards-leave-active {
   transition: all .5s ease;
 }
 .show-notification-enter,
@@ -175,8 +186,16 @@ $border-radius: 3px;
   transform: translateY(-8rem);
   opacity: 0;
 }
+.toggle-actions-enter,
+.toggle-actions-leave-to {
+  transform: translateX(-8rem);
+}
+.toggle-cards-enter,
+.toggle-cards-leave-to {
+  transform: translateY(-10rem);
+}
 .btn-add {
-  background-image: url('../assets/img/plus.svg');
+  background-image: url('../assets/icons/plus.svg');
   background-size: 70%;
   transition: .3s ease-in;
 }
@@ -184,15 +203,15 @@ $border-radius: 3px;
   transform: rotate(45deg);
 }
 .btn-business {
-  background-image: url('../assets/img/business.svg');
+  background-image: url('../assets/icons/business.svg');
   background-color: #fff;
 }
 .btn-greeting {
-  background-image: url('../assets/img/greeting.svg');
+  background-image: url('../assets/icons/greeting.svg');
   background-color: #fff;
 }
 .btn-preview {
-  background-image: url('../assets/img/preview.svg');
+  background-image: url('../assets/icons/preview.svg');
   opacity: 1;
 }
 .dashboard__settings {
@@ -202,16 +221,10 @@ $border-radius: 3px;
   background-color: #fff;
 }
 .btn-home {
-  background-image: url('../assets/img/home.svg');
+  background-image: url('../assets/icons/home.svg');
 }
-.btn-basic {
-  background-image: url('../assets/img/settings.svg');
-}
-.btn-person {
-  background-image: url('../assets/img/account.svg');
-}
-.btn-company {
-  background-image: url('../assets/img/company.svg');
+.btn-settings {
+  background-image: url('../assets/icons/settings.svg');
 }
 .gallery__card {
   width: 70%;
@@ -235,7 +248,7 @@ $border-radius: 3px;
   left: calc(50% - 12rem);
   width: 6rem;
   height: 6rem;
-  background: $color url('../assets/img/eye.svg') center / 50% no-repeat;
+  background: $color url('../assets/icons/eye.svg') center / 50% no-repeat;
   box-shadow: $shadow;
   border-radius: 50%;
   cursor: pointer;
