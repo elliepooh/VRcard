@@ -1,13 +1,11 @@
 <template lang='pug'>
   .card
-    chameleon
 </template>
 
 <script>
-import Chameleon from './cards/Chameleon';
 
 export default {
-  name: 'card',
+  name: 'greetingCard',
   components: {
     Chameleon,
   },
