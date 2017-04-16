@@ -25,6 +25,7 @@ export default {
   },
   methods: {
     routeDashboard() {
+      if (this.$route.path.includes('preview')) return;
       router.push({
         name: 'dashboard',
       });

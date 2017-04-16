@@ -1,7 +1,7 @@
 <template lang='pug'>
   .preview
     header.preview__header
-      .logo.header__logo
+      .logo
         a.logo__link
         h1.logo__title IMENGINE
       .preview__switch-box
@@ -10,7 +10,6 @@
           input(type='checkbox' v-model='greetingCards')
           .switch__slider
         span.switch__label Business
-      a.preview__close-btn(v-if='user')
     .preview__nav-arrow
       a.nav-arrow__btn
       a.nav-arrow__btn
@@ -20,7 +19,6 @@
 <script>
 export default {
   name: 'preview',
-  props: ['user'],
   data() {
     return {
       greetingCards: '',
@@ -130,6 +128,7 @@ input:checked + .switch__slider::after {
   width: 8rem;
   height: 8rem;
   background: #fff url('../assets/icons/arrow.svg') center 80% / 80% no-repeat;
+  cursor: pointer;
   &:first-of-type {
     transform: rotate(-90deg);
     box-shadow: -4px 4px 22px rgba(0, 0, 0, 0.3);
