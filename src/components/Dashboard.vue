@@ -8,6 +8,10 @@
         h2.profile__name
         .profile__avatar
           img.profile__img
+        .profile__more(@click='showProfileMenu = !showProfileMenu')
+          .profile__menu(v-if='showProfileMenu')
+            a.menu-item(@click='showProfileModal = true') Settings
+            a.menu-item Log out
     .dashboard__gallery
       transition(name='show-notification')
         .dashboard__notification(v-if='showMessage') You have {{ limit }} cards limit
@@ -19,9 +23,9 @@
           transition-group(name='toggle-choose' tag='div')
             a.dashboard__btn.btn-business(v-if='chooseCard' @click='addBusinessCard' key='business')
             a.dashboard__btn.btn-greeting(v-if='chooseCard' @click='addGreetingCard' key='greeting')
-          router-link.dashboard__btn.btn-preview(to='{ name: "business-card", params: "user" }')
+          a.dashboard__btn.btn-preview(href='preview-business' target='_blank')
       transition(name='toggle-cards')
-        .gallery__card(v-if='!showSettings' v-for='card in activeCards')
+        .gallery__card(v-if='!showSettings' v-for='card in numOfCards')
           figure.card__preview
             img.card__img
           .card__content
@@ -31,8 +35,33 @@
       nav.dashboard__settings
         a.dashboard__btn.btn-home.dashboard__btn--active
         a.dashboard__btn.btn-settings(@click='showSettings = !showSettings')
+
+      .dashboard__overlay(v-if='showProfileModal' @click='showProfileModal = false')
+      .dashboard__modal(v-if='showProfileModal')
+        .modal__profile-info
+          .profile-info__img
+            img
+          a.btn.profile-info__upload Upload
+          input.profile-info__name
+          a.profile-info__delete Delete account?
+        .modal__profile-settings
+          .profile-settings__email
+            .profile-settings__title Change your email
+            input.profile-settings__input(placeholder='Old email'
+            name='email' type='email' v-model='oldEmail')
+            input.profile-settings__input(placeholder='New email'
+            name='email' type='email' v-model='newEmail')
+            a.btn.profile-settings__btn Accept
+          .profile-settings__password
+            .profile-settings__title Change your password
+            input.profile-settings__input(placeholder='Old password'
+            name='password' type='password' v-model='oldPassword')
+            input.profile-settings__input(placeholder='New password'
+            name='password' type='password' v-model='newPassword')
+            a.btn.profile-settings__btn Accept
+
     nav.dashboard__pagination
-      a.pagination__point(v-for='card in activeCards')
+      a.pagination__point(v-for='card in numOfCards')
 </template>
 
 <script>
@@ -45,18 +74,24 @@ export default {
       user: null,
       userRef: null,
       limit: 0,
-      activeCards: 1,
+      numOfCards: 0,
       chooseCard: false,
       showMessage: false,
       showSettings: false,
+      showProfileMenu: false,
+      showProfileModal: false,
+      oldEmail: '',
+      newEmail: '',
+      oldPassword: '',
+      newPassword: '',
     };
   },
   mounted() {
     Firebase.auth.onAuthStateChanged((user) => {
       if (user) {
         this.user = user;
-        this.userRef = Firebase.dbUsersRef.child(this.convertEmail(this.user.email));
-        this.checkCardLimit();
+        this.userRef = Firebase.dbUsersRef.child(this.user.uid);
+        this.checkUserData();
       }
     });
   },
@@ -71,7 +106,7 @@ export default {
     },
     addBusinessCard() {
       if (this.limit > 0) {
-        this.activeCards += 1;
+        this.numOfCards += 1;
         this.limit -= 1;
         this.userRef.child('cardLimit').set(this.limit);
         this.showSettings = true;
@@ -81,20 +116,21 @@ export default {
     },
     addGreetingCard() {
     },
-    checkCardLimit() {
+    checkUserData() {
       this.userRef.once('value').then((snapshot) => {
         this.limit = snapshot.val().cardLimit;
+        if (snapshot.val().cards) {
+          this.numOfCards = snapshot.val().cards.length;
+        }
       });
-    },
-    convertEmail(email) {
-      return email.toLowerCase().replace(/@/g, '').replace(/\./g, '');
     },
   },
 };
 </script>
 
 <style lang='scss'>
-$color: #6543DD;
+$color-main: #6543DD;
+$color-grey: #D8D8D8;
 $shadow: 0px 8px 22px rgba(0, 0, 0, 0.4);
 $border-radius: 3px;
 
@@ -102,15 +138,15 @@ $border-radius: 3px;
   background-color: #F3F3F3;
 }
 .dashboard__header {
-  background-color: $color;
-  height: 15vh;
+  background-color: $color-main;
+  height: 10rem;
   padding: 0 6rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 .dashboard__gallery {
-  height: 85vh;
+  height: calc(100vh - 10rem);
   padding: 0 6rem;
   display: flex;
   justify-content: space-between;
@@ -123,7 +159,7 @@ $border-radius: 3px;
   top: 3rem;
   left: calc(50% - 15rem);
   text-align: center;
-  background-color: $color;
+  background-color: $color-main;
   border-radius: $border-radius;
   color: #fff;
   padding: 1.5rem 0;
@@ -163,7 +199,7 @@ $border-radius: 3px;
     height: 4rem;
     top: 2rem;
     right: 0;
-    background-color: $color;
+    background-color: $color-main;
   }
 }
 .show-notification-enter-active,
@@ -179,7 +215,7 @@ $border-radius: 3px;
 .show-notification-enter,
 .show-notification-leave-to {
   transform: translateY(-8rem);
-  color: $color;
+  color: $color-main;
 }
 .toggle-choose-enter,
 .toggle-choose-leave-to {
@@ -248,9 +284,114 @@ $border-radius: 3px;
   left: calc(50% - 12rem);
   width: 6rem;
   height: 6rem;
-  background: $color url('../assets/icons/eye.svg') center / 50% no-repeat;
+  background: $color-main url('../assets/icons/eye.svg') center / 50% no-repeat;
   box-shadow: $shadow;
   border-radius: 50%;
   cursor: pointer;
+}
+.header__profile {
+  display: flex;
+}
+.profile__more {
+  width: 2rem;
+  height: 5rem;
+  background: url('../assets/icons/more.svg') center / cover no-repeat;
+  position: relative;
+  cursor: pointer;
+}
+.profile__menu {
+  position: absolute;
+  top: 5rem;
+  right: 0;
+  background-color: #fff;
+  padding: 2rem;
+  z-index: 110;
+}
+.menu-item {
+  display: block;
+  text-transform: uppercase;
+  font-weight: 400;
+  color: #000;
+  opacity: 0.6;
+  cursor: pointer;
+  &:hover {
+    opacity: 1;
+  }
+  &:first-of-type {
+    margin-bottom: 1rem;
+  }
+}
+.dashboard__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  opacity: 0.6;
+}
+.dashboard__modal {
+  position: absolute;
+  width: 50rem;
+  height: 36rem;
+  top: calc(50% - 18rem);
+  left: calc(50% - 25rem);
+  background-color: #fff;
+  box-shadow: $shadow;
+  border-radius: $border-radius;
+  z-index: 110;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.modal__profile-info,
+.modal__profile-settings {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 3rem;
+}
+.modal__profile-info {
+  border-right: 3px solid $color-grey;
+}
+.profile-info__img {
+  width: 15rem;
+  height: 15rem;
+  background-color: $color-grey;
+  border-radius: 50%;
+  margin-bottom: 2rem;
+}
+.profile-info__upload {
+  margin-bottom: 2rem;
+}
+.profile-settings__email,
+.profile-settings__password {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.profile-settings__input,
+.profile-info__name {
+  border: 0;
+  outline: none;
+}
+.btn {
+  width: 16rem;
+  height: 4rem;
+  background-color: $color-main;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 26px;
+  font-size: 1.4rem;
+  text-transform: uppercase;
+  box-shadow: 0px 6px 14px rgba(101, 67, 221, 0.3);
+  cursor: pointer;
+  &:hover {
+    box-shadow: 0px 6px 14px rgba(101, 67, 221, 0.6);
+  }
 }
 </style>
