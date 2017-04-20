@@ -15,6 +15,7 @@ export default {
   panoramasRef: firebaseApp.storage().ref('panoramas'),
   profilePhotosRef: firebaseApp.storage().ref('profile_photos'),
   dbUsersRef: firebaseApp.database().ref('users'),
+  dbEmailsRef: firebaseApp.database().ref('emails'),
   auth: firebaseApp.auth(),
   emailAuth: firebase.auth.EmailAuthProvider,
 };

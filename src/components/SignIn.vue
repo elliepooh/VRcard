@@ -5,22 +5,34 @@
       h1.logo__title IMENGINE
     transition(name='form')
       .signin__form(v-show='form === "email"')
-        h2.form__title What is your email?
+        h2.form__title Enter your email
         .form__input
-          input.input-line(v-bind='inputAttributes' placeholder='im@engine.com'
+          input.input-line(v-bind='inputAttributes' placeholder='anderson@matrix.net'
           v-model='userEmail')
           span.input-required *
           a.input-action(@click='nextForm("password")')
         span.form-notification(v-if='notificationMessage') {{ notificationMessage }}
+
     transition(name='form')
       .signin__form(v-if='form === "password"')
-        h2.form__title What is your password?
+        h2.form__title Enter your password
         .form__input
           input.input-line(v-bind='inputAttributes' placeholder='******'
           v-model='userPassword')
           span.input-required *
           a.input-action(@click='submit')
         span.form-notification(v-if='notificationMessage') {{ notificationMessage }}
+
+    transition(name='form')
+      .signin__form(v-if='form === "username"')
+        h2.form__title Enter your username
+        .form__input
+          input.input-line(v-bind='inputAttributes' placeholder='neo'
+          v-model='username')
+          span.input-required *
+          a.input-action(@click='signUp')
+        span.form-notification(v-if='notificationMessage') {{ notificationMessage }}
+
     .signin__nav
       a.nav-point(@click='nextForm("email")'
       v-bind:class='{ "nav-point--active" : form == "email" }')
@@ -40,6 +52,7 @@ export default {
       notificationMessage: null,
       userEmail: '',
       userPassword: '',
+      username: '',
     };
   },
   computed: {
@@ -47,8 +60,16 @@ export default {
       return {
         name: this.form,
         type: this.form,
+        cardLimit: 0,
       };
     },
+  },
+  mounted() {
+    Firebase.auth.onAuthStateChanged((user) => {
+      if (user) {
+        router.push('dashboard');
+      }
+    });
   },
   methods: {
     nextForm(form) {
@@ -66,12 +87,13 @@ export default {
       }
     },
     submit() {
-      Firebase.dbUsersRef.child(this.convertEmail()).once('value').then((snapshot) => {
+      Firebase.dbEmailsRef.child(this.convertEmail()).once('value').then((snapshot) => {
         if (snapshot.val()) {
           if (snapshot.val().signedUp) {
             this.signIn();
           } else {
-            this.signUp();
+            this.cardLimit = snapshot.val().cardLimit;
+            this.nextForm('username');
           }
         } else {
           this.notificationMessage = 'Sorry, but there is no such email in our base';
@@ -84,9 +106,17 @@ export default {
     signUp() {
       Firebase.auth.createUserWithEmailAndPassword(
         this.userEmail, this.userPassword)
-        .then(() => {
-          Firebase.dbUsersRef.child(this.convertEmail()).set({
+        .then((user) => {
+          Firebase.dbEmailsRef.child(this.convertEmail()).set({
             signedUp: true,
+          });
+          Firebase.dbUsersRef.child(user.uid).set({
+            email: this.userEmail,
+            username: this.username,
+            cardLimit: this.cardLimit,
+          });
+          user.updateProfile({
+            displayName: this.username,
           });
           this.signIn();
         }).catch((error) => {
@@ -126,9 +156,23 @@ export default {
 </script>
 
 <style lang='scss'>
+@import '~style';
+
+::-webkit-input-placeholder {
+  color: darken($color-main, 10);
+}
+::-moz-placeholder {
+  color: darken($color-main, 10);
+}
+:-ms-input-placeholder {
+  color: darken($color-main, 10);
+}
+:-moz-placeholder {
+  color: darken($color-main, 10);
+}
 .signin {
   height: calc(100% - 16rem);
-  background-color: #6543DD;
+  background-color: $color-main;
   color: #fff;
   padding: 8rem;
   position: relative;
@@ -170,7 +214,7 @@ export default {
 .input-line {
   background-color: inherit;
   border: none;
-  border-bottom: 3px solid #4E33AF;
+  border-bottom: 3px solid $color-main;
   outline: none;
   font-size: 3.6rem;
   font-family: 'Roboto', sans-serif;
@@ -184,14 +228,14 @@ export default {
   display: block;
   top: 0;
   left: calc(40% - 1rem);
-  color: #4E33AF;
+  color: $color-main;
   font-size: 3.6rem;
 }
 .input-action {
   width: 5rem;
   height: 5rem;
   border-radius: 50%;
-  background: #fff url('../assets/icons/send.svg') no-repeat 60% center / 60%;
+  background: $color-white url('../assets/icons/send.svg') no-repeat 60% center / 60%;
   cursor: pointer;
 }
 .form-notification {
@@ -224,7 +268,7 @@ export default {
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
-  background-color: #fff;
+  background-color: $color-white;
   opacity: 0.7;
   cursor: pointer;
 }
