@@ -5,13 +5,13 @@
         a.logo__link
         h1.logo__title IMENGINE
       .header__profile
-        h2.profile__name {{ username }}
+        .profile__name {{ username }}
         .profile__avatar(:style='{ backgroundImage: `url(${userPhotoURL})` }'
         @click='showProfileModal = true')
         .profile__more(@click='showProfileMenu = !showProfileMenu')
           .profile__menu(v-if='showProfileMenu')
             a.menu-item(@click='showProfileModal = true') Settings
-            a.menu-item Log out
+            a.menu-item(@click='logOut') Log out
     .dashboard__gallery
       transition(name='show-notification')
         .dashboard__notification(v-if='message' @click='message = ""') {{ message }}
@@ -66,6 +66,7 @@
 
 <script>
 import Firebase from '@/appconfig/firebase';
+import router from '@/router';
 
 export default {
   name: 'dashboard',
@@ -94,6 +95,7 @@ export default {
         this.user = user;
         this.userPhotoURL = this.user.photoURL;
         this.userRef = Firebase.dbUsersRef.child(this.user.uid);
+        this.username = this.user.displayName;
         this.checkUserData();
       }
     });
@@ -170,10 +172,9 @@ export default {
         },
       );
     },
-    deletePhoto() {
-      if (this.user.photoURL) {
-        Firebase.storageAvatarsRef.child(`avatars/${this.avatar}`).delete();
-      }
+    logOut() {
+      Firebase.auth.signOut();
+      router.push('/');
     },
   },
 };
@@ -354,6 +355,14 @@ export default {
 .header__profile {
   display: flex;
   align-items: center;
+}
+.profile__name {
+  margin-right: 2rem;
+  text-transform: uppercase;
+  color: $color-white;
+  font-size: 2rem;
+  font-weight: 400;
+  letter-spacing: 0.2rem;
 }
 .profile__avatar {
   width: 4rem;
