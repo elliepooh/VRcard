@@ -5,16 +5,16 @@
         a.logo__link
         h1.logo__title IMENGINE
       .header__profile
-        h2.profile__name
-        .profile__avatar
-          img.profile__img
+        h2.profile__name {{ username }}
+        .profile__avatar(:style='{ backgroundImage: `url(${userPhotoURL})` }'
+        @click='showProfileModal = true')
         .profile__more(@click='showProfileMenu = !showProfileMenu')
           .profile__menu(v-if='showProfileMenu')
             a.menu-item(@click='showProfileModal = true') Settings
             a.menu-item Log out
     .dashboard__gallery
       transition(name='show-notification')
-        .dashboard__notification(v-if='showMessage') You have {{ limit }} cards limit
+        .dashboard__notification(v-if='message' @click='message = ""') {{ message }}
       transition(name='toggle-actions')
         .dashboard__actions(v-if='!showSettings')
           .actions__add
@@ -39,10 +39,10 @@
       .dashboard__overlay(v-if='showProfileModal' @click='showProfileModal = false')
       .dashboard__modal(v-if='showProfileModal')
         .modal__profile-info
-          .profile-info__img
-            img
-          a.btn.profile-info__upload Upload
-          input.profile-info__name
+          .profile-info__avatar(:style='{ backgroundImage: `url(${userPhotoURL})` }')
+          input.profile-info__upload(name='photo' id='photo' type='file'
+          @change='uploadPhoto')
+          label.btn(for='photo') Upload photo
           a.profile-info__delete Delete account?
         .modal__profile-settings
           .profile-settings__email
@@ -75,11 +75,13 @@ export default {
       userRef: null,
       limit: 0,
       numOfCards: 0,
+      message: '',
       chooseCard: false,
-      showMessage: false,
       showSettings: false,
       showProfileMenu: false,
       showProfileModal: false,
+      userPhotoURL: '',
+      username: '',
       oldEmail: '',
       newEmail: '',
       oldPassword: '',
@@ -90,6 +92,7 @@ export default {
     Firebase.auth.onAuthStateChanged((user) => {
       if (user) {
         this.user = user;
+        this.userPhotoURL = this.user.photoURL;
         this.userRef = Firebase.dbUsersRef.child(this.user.uid);
         this.checkUserData();
       }
@@ -99,10 +102,17 @@ export default {
     addCard() {
       if (this.limit > 0) {
         this.chooseCard = !this.chooseCard;
-        this.showMessage = !this.showMessage;
+        if (this.chooseCard) {
+          this.showCardLimit();
+        } else {
+          this.message = '';
+        }
       } else {
-        this.showMessage = true;
+        this.showCardLimit();
       }
+    },
+    showCardLimit() {
+      this.message = `You have ${this.limit} cards limit`;
     },
     addBusinessCard() {
       if (this.limit > 0) {
@@ -111,7 +121,7 @@ export default {
         this.userRef.child('cardLimit').set(this.limit);
         this.showSettings = true;
       } else {
-        this.showMessage = true;
+        this.showCardLimit();
       }
     },
     addGreetingCard() {
@@ -124,18 +134,69 @@ export default {
         }
       });
     },
+    uploadPhoto(event) {
+      const file = event.target.files[0];
+      if (file.size / 1024 > 2048) {
+        this.message = 'Your image is too big. Maximal file size is 2MB.';
+        return;
+      }
+      const storageFileRef = Firebase.profilePhotosRef.child(this.user.uid);
+      const task = storageFileRef.put(file);
+      task.on('state_changed',
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          this.message = `Upload is ${Math.round(progress)}% done`;
+        },
+        (error) => {
+          switch (error.code) {
+            case 'storage/unauthorized':
+              this.message = 'Sorry, but you don\'t have permission to upload files';
+              break;
+            case 'storage/canceled':
+              this.message = 'You canceled the upload';
+              break;
+            default:
+              this.message = error.code;
+          }
+        },
+        () => {
+          storageFileRef.getDownloadURL().then((url) => {
+            this.user.updateProfile({
+              photoURL: url,
+            });
+            this.userPhotoURL = url;
+          });
+          this.message = 'Upload is complete!';
+        },
+      );
+    },
+    deletePhoto() {
+      if (this.user.photoURL) {
+        Firebase.storageAvatarsRef.child(`avatars/${this.avatar}`).delete();
+      }
+    },
   },
 };
 </script>
 
-<style lang='scss'>
-$color-main: #6543DD;
-$color-grey: #D8D8D8;
-$shadow: 0px 8px 22px rgba(0, 0, 0, 0.4);
-$border-radius: 3px;
+<style lang='scss' scoped>
+@import '~style';
+
+::-webkit-input-placeholder {
+  color: $color-gray;
+}
+::-moz-placeholder {
+  color: $color-gray;
+}
+:-ms-input-placeholder {
+  color: $color-gray;
+}
+:-moz-placeholder {
+  color: $color-gray;
+}
 
 .dashboard {
-  background-color: #F3F3F3;
+  background-color: $color-white;
 }
 .dashboard__header {
   background-color: $color-main;
@@ -161,8 +222,9 @@ $border-radius: 3px;
   text-align: center;
   background-color: $color-main;
   border-radius: $border-radius;
-  color: #fff;
+  color: $color-white;
   padding: 1.5rem 0;
+  z-index: 200;
 }
 .dashboard__actions {
   display: flex;
@@ -175,7 +237,7 @@ $border-radius: 3px;
 .btn-preview {
   box-shadow: $shadow;
   border-radius: $border-radius;
-  background-color: #fff;
+  background-color: $color-white;
 }
 .dashboard__btn {
   display: block;
@@ -240,11 +302,11 @@ $border-radius: 3px;
 }
 .btn-business {
   background-image: url('../assets/icons/business.svg');
-  background-color: #fff;
+  background-color: $color-white;
 }
 .btn-greeting {
   background-image: url('../assets/icons/greeting.svg');
-  background-color: #fff;
+  background-color: $color-white;
 }
 .btn-preview {
   background-image: url('../assets/icons/preview.svg');
@@ -254,7 +316,7 @@ $border-radius: 3px;
   width: 8rem;
   box-shadow: $shadow;
   border-radius: $border-radius;
-  background-color: #fff;
+  background-color: $color-white;
 }
 .btn-home {
   background-image: url('../assets/icons/home.svg');
@@ -272,11 +334,11 @@ $border-radius: 3px;
 }
 .card__preview {
   flex: 1;
-  background-color: #e0e0e0;
+  background-color: $color-gray;
 }
 .card__content {
   flex: 1;
-  background-color: #fff;
+  background-color: $color-white;
 }
 .card__btn-view {
   position: absolute;
@@ -291,6 +353,17 @@ $border-radius: 3px;
 }
 .header__profile {
   display: flex;
+  align-items: center;
+}
+.profile__avatar {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin-right: 2rem;
+  cursor: pointer;
 }
 .profile__more {
   width: 2rem;
@@ -303,7 +376,7 @@ $border-radius: 3px;
   position: absolute;
   top: 5rem;
   right: 0;
-  background-color: #fff;
+  background-color: lighten($color-gray, 10);
   padding: 2rem;
   z-index: 110;
 }
@@ -311,7 +384,7 @@ $border-radius: 3px;
   display: block;
   text-transform: uppercase;
   font-weight: 400;
-  color: #000;
+  color: $color-dark;
   opacity: 0.6;
   cursor: pointer;
   &:hover {
@@ -328,16 +401,16 @@ $border-radius: 3px;
   z-index: 100;
   width: 100%;
   height: 100%;
-  background-color: #000;
+  background-color: $color-dark;
   opacity: 0.6;
 }
 .dashboard__modal {
   position: absolute;
-  width: 50rem;
-  height: 36rem;
-  top: calc(50% - 18rem);
-  left: calc(50% - 25rem);
-  background-color: #fff;
+  width: 60rem;
+  height: 40rem;
+  top: calc(50% - 20rem);
+  left: calc(50% - 30rem);
+  background-color: $color-white;
   box-shadow: $shadow;
   border-radius: $border-radius;
   z-index: 110;
@@ -352,46 +425,65 @@ $border-radius: 3px;
   align-items: center;
   padding: 0 3rem;
 }
-.modal__profile-info {
-  border-right: 3px solid $color-grey;
-}
-.profile-info__img {
-  width: 15rem;
-  height: 15rem;
-  background-color: $color-grey;
-  border-radius: 50%;
-  margin-bottom: 2rem;
-}
-.profile-info__upload {
-  margin-bottom: 2rem;
-}
-.profile-settings__email,
-.profile-settings__password {
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
 .profile-settings__input,
 .profile-info__name {
   border: 0;
   outline: none;
+  background-color: $color-white;
+  color: $color-main;
+  font-weight: 400;
 }
-.btn {
-  width: 16rem;
-  height: 4rem;
-  background-color: $color-main;
-  color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 26px;
-  font-size: 1.4rem;
-  text-transform: uppercase;
-  box-shadow: 0px 6px 14px rgba(101, 67, 221, 0.3);
+.modal__profile-info {
+  flex: 2;
+  position: relative;
+}
+.profile-info__avatar {
+  width: 15rem;
+  height: 15rem;
+  background-color: $color-gray;
+  border-radius: 50%;
+  margin-bottom: 2rem;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.profile-info__upload {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+.profile-info__delete {
+  color: #BB0000;
   cursor: pointer;
-  &:hover {
-    box-shadow: 0px 6px 14px rgba(101, 67, 221, 0.6);
-  }
+  font-size: 1.4rem;
+  margin-top: 3rem;
+}
+.modal__profile-settings {
+  flex: 3;
+  align-items: stretch;
+  border-left: 3px solid $color-gray;
+}
+.profile-settings__email,
+.profile-settings__password {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.profile-settings__email {
+  margin-bottom: 2rem;
+}
+.profile-settings__title {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-weight: 400;
+  color: $color-darkgray;
+}
+.profile-settings__input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
 }
 </style>
