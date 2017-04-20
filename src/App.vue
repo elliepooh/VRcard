@@ -52,18 +52,6 @@ body {
   font-weight: 300;
   overflow: hidden;
 }
-::-webkit-input-placeholder {
-  color: #4E33AF;
-}
-::-moz-placeholder {
-  color: #4E33AF;
-}
-:-ms-input-placeholder {
-  color: #4E33AF;
-}
-:-moz-placeholder {
-  color: #4E33AF;
-}
 .main {
   width: 100%;
   height: 100%;
