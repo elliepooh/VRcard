@@ -4,33 +4,9 @@
 </template>
 
 <script>
-import router from '@/router';
-import Firebase from '@/appconfig/firebase';
 
 export default {
   name: 'app',
-  data() {
-    return {
-      user: null,
-    };
-  },
-  mounted() {
-    Firebase.auth.onAuthStateChanged((user) => {
-      if (user) {
-        this.user = user;
-        this.routeDashboard();
-      }
-    });
-    if (this.user) this.routeDashboard();
-  },
-  methods: {
-    routeDashboard() {
-      if (this.$route.path.includes('preview')) return;
-      router.push({
-        name: 'dashboard',
-      });
-    },
-  },
 };
 </script>
 
