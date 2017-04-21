@@ -1,43 +1,43 @@
 <template lang='pug'>
   .signin
-    .logo.signin__logo
-      a.logo__link
-      h1.logo__title IMENGINE
+    .logo
+      a.logo-img
+      h1.logo-title IMENGINE
     transition(name='form')
-      .signin__form(v-show='form === "email"')
-        h2.form__title Enter your email
-        .form__input
+      .form(v-show='form === "email"')
+        h2.form-title Enter your email
+        .form-input
           input.input-line(v-bind='inputAttributes' placeholder='anderson@matrix.net'
           v-model='userEmail')
           span.input-required *
           a.input-action(@click='nextForm("password")')
-        span.form-notification(v-if='notificationMessage') {{ notificationMessage }}
+        span.notification(v-if='notificationMessage') {{ notificationMessage }}
 
     transition(name='form')
-      .signin__form(v-if='form === "password"')
-        h2.form__title Enter your password
-        .form__input
+      .form(v-if='form === "password"')
+        h2.form-title Enter your password
+        .form-input
           input.input-line(v-bind='inputAttributes' placeholder='******'
           v-model='userPassword')
           span.input-required *
           a.input-action(@click='submit')
-        span.form-notification(v-if='notificationMessage') {{ notificationMessage }}
+        span.notification(v-if='notificationMessage') {{ notificationMessage }}
 
     transition(name='form')
-      .signin__form(v-if='form === "username"')
-        h2.form__title Enter your username
-        .form__input
+      .signin-form(v-if='form === "username"')
+        h2.form-title Enter your username
+        .form-input
           input.input-line(v-bind='inputAttributes' placeholder='neo'
           v-model='username')
           span.input-required *
-          a.input-action(@click='signUp')
-        span.form-notification(v-if='notificationMessage') {{ notificationMessage }}
+          a.input-action(@click='checkUsername')
+        span.notification(v-if='notificationMessage') {{ notificationMessage }}
 
-    .signin__nav
+    .nav
       a.nav-point(@click='nextForm("email")'
-      v-bind:class='{ "nav-point--active" : form == "email" }')
+      v-bind:class='{ "point-active" : form == "email" }')
       a.nav-point(@click='nextForm("password")'
-      v-bind:class='{ "nav-point--active" : form == "password" }')
+      v-bind:class='{ "point-active" : form == "password" }')
 </template>
 
 <script>
@@ -103,6 +103,13 @@ export default {
     convertEmail() {
       return this.userEmail.toLowerCase().replace(/@/g, '').replace(/\./g, '');
     },
+    checkUsername() {
+      if (/^[0-9a-zA-Z_.-]+$/.test(this.username)) {
+        this.signUp();
+      } else {
+        this.notificationMessage = 'Username should contain only numbers, letters or _ . - characters.';
+      }
+    },
     signUp() {
       Firebase.auth.createUserWithEmailAndPassword(
         this.userEmail, this.userPassword)
@@ -155,7 +162,7 @@ export default {
 };
 </script>
 
-<style lang='scss'>
+<style lang='scss' scoped>
 @import '~style';
 
 ::-webkit-input-placeholder {
@@ -177,37 +184,19 @@ export default {
   padding: 8rem;
   position: relative;
 }
-.logo {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  color: #fff;
-}
-.logo__link {
-  display: block;
-  width: 7rem;
-  height: 7rem;
-  margin-right: 1rem;
-  background: url('../assets/icons/logo.svg') no-repeat center / contain;
-}
-.logo__title {
-  font-size: 3rem;
-  font-weight: 500;
-  letter-spacing: 0.4rem;
-}
-.signin__form {
+.form {
   position: absolute;
   top: 40%;
   left: 8rem;
   width: 80%;
 }
-.form__title {
+.form-title {
   margin-bottom: 5rem;
   font-size: 6rem;
   font-weight: 500;
   text-transform: uppercase;
 }
-.form__input {
+.form-input {
   display: flex;
   position: relative;
 }
@@ -238,7 +227,7 @@ export default {
   background: $color-white url('../assets/icons/send.svg') no-repeat 60% center / 60%;
   cursor: pointer;
 }
-.form-notification {
+.notification {
   position: absolute;
   bottom: -4rem;
   left: 0;
@@ -255,7 +244,7 @@ export default {
 .form-leave-to {
   transform: translateY(60vh);
 }
-.signin__nav {
+.nav {
   position: absolute;
   top: 50%;
   right: 8rem;
@@ -272,7 +261,7 @@ export default {
   opacity: 0.7;
   cursor: pointer;
 }
-.nav-point--active {
+.point-active {
   opacity: 1;
 }
 </style>
