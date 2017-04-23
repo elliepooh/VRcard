@@ -28,7 +28,7 @@
           @click='showGreetingSettings' key='greeting')
         a.dashboard-btn.btn-preview(href='preview-business' target='_blank')
 
-      router-view
+      router-view(:key='$route.path')
 
       nav.settings
         router-link.dashboard-btn.btn-home(to='/'
@@ -61,12 +61,10 @@
           input.settings-input(placeholder='New password'
           name='password' type='password' v-model='newPassword')
           a.btn Accept
-
-    nav.pagination
-      //- a.point(v-for='card in numOfCards')
 </template>
 
 <script>
+/* eslint-disable no-param-reassign */
 import Firebase from '@/appconfig/firebase';
 import router from '@/router';
 
@@ -76,6 +74,7 @@ export default {
     return {
       user: null,
       userRef: null,
+      cardsRef: null,
       limit: 0,
       message: '',
       chooseCard: false,
@@ -88,16 +87,19 @@ export default {
       newPassword: '',
     };
   },
-  mounted() {
+  created() {
     Firebase.auth.onAuthStateChanged((user) => {
       if (user) {
         this.user = user;
-        this.userPhotoURL = this.user.photoURL;
         this.userRef = Firebase.dbUsersRef.child(this.user.uid);
         this.username = this.user.displayName;
+        this.cardsRef = Firebase.dbCardsRef.child(this.username);
+
+        this.userPhotoURL = this.user.photoURL;
         this.oldEmail = this.user.email;
 
-        this.checkUserData();
+        this.getUserData();
+        this.getUserCards();
       }
     });
   },
@@ -127,14 +129,18 @@ export default {
     },
     showGreetingSettings() {
     },
-    checkUserData() {
+    getUserData() {
       this.userRef.once('value').then((snapshot) => {
         this.limit = snapshot.val().cardLimit;
-        if (snapshot.val().cards) {
+      });
+    },
+    getUserCards() {
+      this.cardsRef.once('value').then((snapshot) => {
+        if (snapshot.exists()) {
           router.push({
-            path: 'dashboard/gallery',
+            name: 'gallery',
             params: {
-              numOfCards: snapshot.val().cards.length,
+              username: this.username,
             },
           });
         }
@@ -206,7 +212,7 @@ export default {
 }
 .header {
   background-color: $color-main;
-  height: 10rem;
+  height: 12rem;
   padding: 0 6rem;
   display: flex;
   justify-content: space-between;
@@ -291,7 +297,7 @@ export default {
   opacity: 0;
 }
 .content {
-  height: calc(100% - 10rem);
+  height: calc(100% - 12rem);
   display: flex;
   justify-content: space-between;
   align-items: center;

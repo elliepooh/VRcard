@@ -16,6 +16,7 @@ export default {
   profilePhotosRef: firebaseApp.storage().ref('profile_photos'),
   dbUsersRef: firebaseApp.database().ref('users'),
   dbEmailsRef: firebaseApp.database().ref('emails'),
+  dbCardsRef: firebaseApp.database().ref('cards'),
   auth: firebaseApp.auth(),
   emailAuth: firebase.auth.EmailAuthProvider,
 };
