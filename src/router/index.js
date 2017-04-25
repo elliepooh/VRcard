@@ -5,9 +5,8 @@ import SignIn from '@/components/SignIn';
 import Dashboard from '@/components/Dashboard';
 import Preview from '@/components/Preview';
 
-import Gallery from '@/components/dashboard/Gallery';
 import BusinessSettings from '@/components/dashboard/BusinessSettings';
-import GreetingSettings from '@/components/dashboard/GreetingSettings';
+// import GreetingSettings from '@/components/dashboard/GreetingSettings';
 
 Vue.use(Router);
 
@@ -24,18 +23,9 @@ export default new Router({
       component: Dashboard,
       children: [
         {
-          path: 'gallery',
-          component: Gallery,
-          props: true,
-        }, {
           path: 'business-settings',
           name: 'business-settings',
           component: BusinessSettings,
-          props: true,
-        }, {
-          path: 'greeting-settings',
-          name: 'greeting-settings',
-          component: GreetingSettings,
           props: true,
         },
       ],
