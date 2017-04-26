@@ -7,10 +7,10 @@
       .header-profile
         .profile-name {{ username }}
         .profile-avatar(:style='{ backgroundImage: `url(${userPhotoURL})` }'
-        @click='showProfileModal = true')
+        @click='showModal = true')
         .profile-more
           .profile-menu
-            a.menu-item(@click='showProfileModal = true') Settings
+            a.menu-item(@click='showModal = true') Settings
             a.menu-item(@click='logOut') Log out
 
       transition(name='vertical-toggle')
@@ -23,44 +23,57 @@
         v-bind:class='{ "btn-add-active": chooseCard }')
         transition-group(name='vertical-toggle' tag='div')
           a.dashboard-btn.btn-business(v-if='chooseCard'
-          @click='showBusinessSettings' key='business')
+          @click='addBusinessCard' key='business')
           a.dashboard-btn.btn-greeting(v-if='chooseCard'
-          @click='showGreetingSettings' key='greeting')
+          @click='addGreetingCard' key='greeting')
         a.dashboard-btn.btn-preview(href='preview-business' target='_blank')
+
+      .gallery(v-if='!$route.path.includes("settings") && username')
+        .card(v-if='cards.length')
+          figure.card-preview
+            img.card-img
+          .card-content
+            h3.card-title {{ cards[current].firstName }} {{ cards[current].lastName }}
+            span.card-email {{ cards[current].email }}
+            p.card-description {{ cards[current].description }} {{ cards[current].description }}
+          a.btn.btn-view
 
       router-view(:key='$route.path')
 
       nav.settings
         router-link.dashboard-btn.btn-home(to='/'
         v-bind:class='{ "btn-active": $route.path === "/dashboard" }')
-        router-link.dashboard-btn.btn-settings(to='business-settings'
+        a.dashboard-btn.btn-settings(@click='showSettings'
         v-bind:class='{ "btn-active": $route.path.includes("settings") }')
         transition(name='vertical-toggle')
           a.dashboard-btn.btn-brush(v-if='$route.path.includes("business-settings")')
 
-    .overlay(v-if='showProfileModal' @click='showProfileModal = false')
-    .modal(v-if='showProfileModal')
-      .modal-info
-        .info-avatar(:style='{ backgroundImage: `url(${userPhotoURL})` }')
-        input.info-upload(name='photo' id='photo' type='file'
-        @change='uploadPhoto')
-        label.btn(for='photo') Upload photo
-        a.info-delete Delete account?
-      .modal-settings
-        .settings-email
-          .settings-title Change your email
-          input.settings-input(placeholder='Old email'
-          name='email' type='email' v-model='oldEmail')
-          input.settings-input(placeholder='New email'
-          name='email' type='email' v-model='newEmail')
-          a.btn(@click='updateEmail') Accept
-        .settings-password
-          .settings-title Change your password
-          input.settings-input(placeholder='Old password'
-          name='password' type='password' v-model='oldPassword')
-          input.settings-input(placeholder='New password'
-          name='password' type='password' v-model='newPassword')
-          a.btn Accept
+      nav.pagination(v-if='Object.keys(cards).length > 1')
+        a.point(v-for='card in cards')
+
+      .overlay(v-if='showModal' @click='showModal = false')
+      .modal(v-if='showModal')
+        .modal-info
+          .info-avatar(:style='{ backgroundImage: `url(${userPhotoURL})` }')
+          input.info-upload(name='photo' id='photo' type='file'
+          @change='uploadPhoto')
+          label.btn(for='photo') Upload photo
+          a.info-delete Delete account?
+        .modal-settings
+          .settings-email
+            .settings-title Change your email
+            input.settings-input(placeholder='Old email'
+            name='email' type='email' v-model='oldEmail')
+            input.settings-input(placeholder='New email'
+            name='email' type='email' v-model='newEmail')
+            a.btn(@click='updateEmail') Accept
+          .settings-password
+            .settings-title Change your password
+            input.settings-input(placeholder='Old password'
+            name='password' type='password' v-model='oldPassword')
+            input.settings-input(placeholder='New password'
+            name='password' type='password' v-model='newPassword')
+            a.btn Accept
 </template>
 
 <script>
@@ -75,12 +88,18 @@ export default {
       user: null,
       userRef: null,
       cardsRef: null,
-      limit: 0,
-      message: '',
-      chooseCard: false,
-      showProfileModal: false,
-      userPhotoURL: '',
       username: '',
+      userPhotoURL: '',
+      limit: 0,
+
+      message: '',
+
+      chooseCard: false,
+      showModal: false,
+
+      cards: [],
+      current: 0,
+
       oldEmail: '',
       newEmail: '',
       oldPassword: '',
@@ -91,19 +110,55 @@ export default {
     Firebase.auth.onAuthStateChanged((user) => {
       if (user) {
         this.user = user;
-        this.userRef = Firebase.dbUsersRef.child(this.user.uid);
         this.username = this.user.displayName;
+
+        this.userRef = Firebase.dbUsersRef.child(this.user.uid);
         this.cardsRef = Firebase.dbCardsRef.child(this.username);
 
         this.userPhotoURL = this.user.photoURL;
         this.oldEmail = this.user.email;
 
         this.getUserData();
-        this.getUserCards();
+        this.getCardsData();
       }
     });
   },
   methods: {
+    getUserData() {
+      this.userRef.once('value').then((snapshot) => {
+        this.limit = snapshot.val().cardLimit;
+      });
+    },
+    getCardsData() {
+      const cardDataKeys = [
+        'firstName',
+        'lastName',
+        'email',
+        'description',
+        'photo',
+        'type',
+      ];
+
+      this.cardsRef.once('value').then((snapshot) => {
+        if (snapshot.exists()) {
+          snapshot.forEach((card) => {
+            const data = {};
+            cardDataKeys.forEach((key) => {
+              const dbKey = card.child(key).val();
+              if (dbKey) {
+                if (key === 'description' && dbKey.length > 300) {
+                  data[key] = dbKey.slice(0, dbKey.slice(0, 300).lastIndexOf('.') + 1);
+                } else {
+                  data[key] = dbKey;
+                }
+              }
+              data.cardname = card.key;
+              this.cards.push(data);
+            });
+          });
+        }
+      });
+    },
     addCard() {
       if (this.limit > 0) {
         this.chooseCard = !this.chooseCard;
@@ -113,13 +168,13 @@ export default {
     showCardLimit() {
       this.message = `You have ${this.limit} cards limit`;
     },
-    showBusinessSettings() {
+    addBusinessCard() {
       if (this.limit > 0) {
         router.push({
           name: 'business-settings',
           params: {
             userRef: this.userRef,
-            username: this.username,
+            cardsRef: this.username,
             limit: this.limit,
           },
         });
@@ -127,60 +182,35 @@ export default {
         this.showCardLimit();
       }
     },
-    showGreetingSettings() {
-    },
-    getUserData() {
-      this.userRef.once('value').then((snapshot) => {
-        this.limit = snapshot.val().cardLimit;
-      });
-    },
-    getUserCards() {
-      this.cardsRef.once('value').then((snapshot) => {
-        if (snapshot.exists()) {
-          router.push({
-            name: 'gallery',
-            params: {
-              username: this.username,
-            },
-          });
-        }
+    addGreetingCard() {},
+    showSettings() {
+      const routerName = this.cards[this.current].type === 'business' ?
+        'business-settings' : 'greeting-settings';
+      router.push({
+        name: routerName,
+        params: {
+          userRef: this.userRef,
+          cardsRef: this.cardsRef,
+          cardname: this.cards[this.current].cardname,
+        },
       });
     },
     uploadPhoto(event) {
       const file = event.target.files[0];
-      if (file.size / 1024 > 2048) {
-        this.message = 'Your image is too big. Maximal file size is 2MB.';
-        return;
-      }
-      const storageFileRef = Firebase.profilePhotosRef.child(this.user.uid);
-      const task = storageFileRef.put(file);
-      task.on('state_changed',
-        (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          this.message = `Upload is ${Math.round(progress)}% done`;
-        },
-        (error) => {
-          switch (error.code) {
-            case 'storage/unauthorized':
-              this.message = 'Sorry, but you don\'t have permission to upload files';
-              break;
-            case 'storage/canceled':
-              this.message = 'You canceled the upload';
-              break;
-            default:
-              this.message = error.code;
-          }
-        },
-        () => {
+      if (file.size / 1024 < 2048) {
+        const storageFileRef = Firebase.profilePhotosRef.child(this.user.uid);
+        const task = storageFileRef.put(file);
+        task.on('state_changed', () => {
           storageFileRef.getDownloadURL().then((url) => {
+            this.userPhotoURL = url;
             this.user.updateProfile({
               photoURL: url,
             });
-            this.userPhotoURL = url;
           });
-          this.message = 'Upload is complete!';
-        },
-      );
+        });
+      } else {
+        this.message = 'Your image is too big. Maximal file size is 2MB.';
+      }
     },
     updateEmail() {
       this.user.updateEmail(this.newEmail);
@@ -388,6 +418,76 @@ export default {
     right: 0;
     background-color: $color-main;
   }
+}
+.gallery {
+  flex: 1;
+  height: 40rem;
+  padding: 0 5rem;
+  position: relative;
+}
+.card {
+  width: 100%;
+  height: 100%;
+  box-shadow: $shadow;
+  border-radius: $border-radius;
+  display: flex;
+  position: relative;
+}
+.card-preview {
+  flex: 1;
+  background-color: $color-gray;
+}
+.card-content {
+  flex: 1;
+  background-color: $color-white;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.card-title {
+  font-size: 2.6rem;
+  color: $color-dark;
+  margin-bottom: 2rem;
+}
+.card-email {
+
+}
+.card-description {
+  overflow: hidden;
+  font-size: 1.8rem;
+  color: darken($color-darkgray, 20);
+}
+.btn-view {
+  position: absolute;
+  bottom: 3rem;
+  left: calc(50% - 12rem);
+  width: 6rem;
+  height: 6rem;
+  background-image: url('../assets/icons/eye.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+}
+.pagination {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  bottom: -20%;
+  left: 0;
+}
+.point {
+  width: 3rem;
+  height: 3rem;
+  background-color: $color-darkgray;
+  border-radius: 50%;
+  &:not(:last-of-type) {
+    margin-right: 2rem;
+  }
+}
+.point-active {
+  background-color: $color-main;
 }
 .overlay {
   position: absolute;
