@@ -1,0 +1,68 @@
+@import 'global';
+
+$color-text: darken($color-darkgray, 20);
+
+.settings {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 3rem;
+  position: relative;
+  align-items: center;
+}
+.notification {
+  position: absolute;
+  height: 4rem;
+  line-height: 4rem;
+  width: 30rem;
+  top: -8rem;
+  left: calc(50% - 15rem);
+  text-align: center;
+  vertical-align: middle;
+  color: $color-text;
+  font-weight: 400;
+  font-size: 2rem;
+}
+.settings-windows {
+  align-self: stretch;
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  margin-bottom: 3rem;
+}
+.settings-window {
+  flex-basis: 20%;
+  background-color: $color-white;
+  box-shadow: $shadow;
+  border-radius: $border-radius;
+  padding: 6rem 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.settings-multiple {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.settings-item {
+  position: relative;
+  &:not(:last-of-type) {
+    margin-bottom: 2rem;
+  }
+}
+.item-name {
+  color: $color-text;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  font-weight: 400;
+}
+.item-input {
+  width: 100%;
+  color: $color-main;
+  border-bottom: 2px solid $color-darkgray;
+  background-color: $color-white;
+  font-size: 1.6rem;
+  font-weight: 400;
+}
