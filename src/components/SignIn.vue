@@ -163,7 +163,7 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-@import '~style';
+@import '~global';
 
 ::-webkit-input-placeholder {
   color: darken($color-main, 10);
