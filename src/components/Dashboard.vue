@@ -40,38 +40,38 @@
 
       router-view(:key='$route.path')
 
-      nav.settings
+      nav.settings-board
         router-link.dashboard-btn.btn-home(to='/'
         v-bind:class='{ "btn-active": $route.path === "/dashboard" }')
         a.dashboard-btn.btn-settings(@click='showSettings'
         v-bind:class='{ "btn-active": $route.path.includes("settings") }')
         transition(name='vertical-toggle')
-          a.dashboard-btn.btn-brush(v-if='$route.path.includes("business-settings")')
+          a.dashboard-btn.btn-brush(v-if='$route.path.includes("business-settings")'
+          @click='showBusinessAssets')
 
-      nav.pagination(v-if='Object.keys(cards).length > 1')
+      nav.pagination(v-if='Object.keys(cards).length > 1 && !$route.path.includes("settings")')
         a.point(v-for='card in cards')
 
       .overlay(v-if='showModal' @click='showModal = false')
       .modal(v-if='showModal')
-        .modal-info
-          .info-avatar(:style='{ backgroundImage: `url(${userPhotoURL})` }')
-          input.info-upload(name='photo' id='photo' type='file'
+        .modal-assets
+          .assets-avatar(:style='{ backgroundImage: `url(${userPhotoURL})` }')
+          input.assets-upload(name='photo' id='photo' type='file'
           @change='uploadPhoto')
           label.btn(for='photo') Upload photo
-          a.info-delete Delete account?
-        .modal-settings
-          .settings-email
-            .settings-title Change your email
-            input.settings-input(placeholder='Old email'
+        .modal-info
+          .info-email
+            .info-title Change your email
+            input.info-input(placeholder='Old email'
             name='email' type='email' v-model='oldEmail')
-            input.settings-input(placeholder='New email'
+            input.info-input(placeholder='New email'
             name='email' type='email' v-model='newEmail')
             a.btn(@click='updateEmail') Accept
-          .settings-password
-            .settings-title Change your password
-            input.settings-input(placeholder='Old password'
+          .info-password
+            .info-title Change your password
+            input.info-input(placeholder='Old password'
             name='password' type='password' v-model='oldPassword')
-            input.settings-input(placeholder='New password'
+            input.info-input(placeholder='New password'
             name='password' type='password' v-model='newPassword')
             a.btn Accept
 </template>
@@ -174,7 +174,7 @@ export default {
           name: 'business-settings',
           params: {
             userRef: this.userRef,
-            cardsRef: this.username,
+            cardsRef: this.cardsRef,
             limit: this.limit,
           },
         });
@@ -189,7 +189,15 @@ export default {
       router.push({
         name: routerName,
         params: {
-          userRef: this.userRef,
+          cardsRef: this.cardsRef,
+          cardname: this.cards[this.current].cardname,
+        },
+      });
+    },
+    showBusinessAssets() {
+      router.push({
+        name: 'business-assets',
+        params: {
           cardsRef: this.cardsRef,
           cardname: this.cards[this.current].cardname,
         },
@@ -233,7 +241,7 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-@import '~style';
+@import '~global';
 
 .dashboard {
   height: 100%;
@@ -317,15 +325,6 @@ export default {
   color: $color-white;
   font-weight: 400;
 }
-.vertical-toggle-enter-active,
-.vertical-toggle-leave-active, {
-  transition: all .4s ease-in;
-}
-.vertical-toggle-enter,
-.vertical-toggle-leave-to {
-  transform: translateY(-8rem);
-  opacity: 0;
-}
 .content {
   height: calc(100% - 12rem);
   display: flex;
@@ -379,7 +378,7 @@ export default {
   background-image: url('../assets/icons/preview.svg');
   opacity: 1;
 }
-.settings {
+.settings-board {
   width: 8rem;
   box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.3);
   border-radius: $border-radius;
@@ -513,18 +512,18 @@ export default {
   justify-content: center;
   align-items: center;
 }
-.modal-info,
-.modal-settings {
+.modal-assets,
+.modal-info {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 0 3rem;
 }
-.modal-info {
+.assets-profile {
   flex: 2;
   position: relative;
 }
-.info-avatar {
+.assets-avatar {
   width: 15rem;
   height: 15rem;
   background-color: $color-gray;
@@ -534,25 +533,19 @@ export default {
   background-position: center;
   background-repeat: no-repeat;
 }
-.info-upload {
+.assets-upload {
   width: 0.1px;
   height: 0.1px;
   opacity: 0;
   overflow: hidden;
   z-index: -1;
 }
-.info-delete {
-  color: #BB0000;
-  cursor: pointer;
-  font-size: 1.4rem;
-  margin-top: 3rem;
-}
-.modal-settings {
+.modal-info {
   flex: 3;
   align-items: stretch;
   border-left: 3px solid $color-darkgray;
 }
-.settings-input {
+.info-input {
   background-color: $color-white;
   color: $color-main;
   font-weight: 400;
@@ -561,16 +554,16 @@ export default {
   margin-bottom: 1rem;
   font-size: 1.4rem;
 }
-.settings-email,
-.settings-password {
+.info-email,
+.info-password {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.settings-email {
+.info-email {
   margin-bottom: 2rem;
 }
-.settings-title {
+.info-title {
   text-align: center;
   margin-bottom: 2rem;
   font-weight: 400;
