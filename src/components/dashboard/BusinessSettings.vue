@@ -1,196 +1,175 @@
 <template lang='pug'>
-  .business-settings
+  .settings
+
+    transition(name='vertical-toggle')
+      .notification(v-if='message' @click='message = ""') {{ message }}
+
     .settings-windows
       .settings-window
         .settings-item
           .item-name(v-bind:class='{ "item-warn": warn.includes("firstName") }') First name
           input.item-input.input-required(placeholder='Enter your first name'
-          name='firsName' type='text' v-model='firstName' required)
+          name='firsName' type='text' v-model='info.firstName' required)
           span.item-required *
         .settings-item
           .item-name(v-bind:class='{ "item-warn": warn.includes("lastName") }') Last name
           input.item-input.input-required(placeholder='Enter your last name'
-          name='lastName' type='text' v-model='lastName' required)
+          name='lastName' type='text' v-model='info.lastName' required)
           span.item-required *
         .settings-item
           .item-name Email
           input.item-input(placeholder='Enter your email' name='email'
-          type='email' v-model='email')
+          type='email' v-model='info.email')
         .settings-item
           .item-name Phone number
           input.item-input(placeholder='Enter your phone number' name='phone'
-          type='tel' v-model='phone')
+          type='tel' v-model='info.phone')
 
-      .settings-center
+      .settings-multiple
         .settings-window.card-name
           .settings-item
             .item-name(v-bind:class='{ "item-warn": warn.includes("cardname") }') Card name
             input.item-input.input-required(placeholder='Enter card name'
-            name='cardname' type='text' v-model='cardname' required)
+            name='cardname' type='text' v-model='info.cardname' required
+            v-bind:disabled='cardname')
             span.item-required *
-            .item-tooltip(v-bind:class='{ "item-warn": warn.includes("tooltip") }')
-              | Card name should contain only numbers, letters or _ . - characters.
+            .item-tooltip(v-bind:class='{ "item-warn": warn.includes("tooltip") }') {{ tooltipText }}
         .settings-window.card-description
           .settings-item
             .item-name Description
             textarea.item-description(placeholder='Tell something about you'
-            name='description' rows='7' cols='38' v-model='description')
+            name='description' rows='7' cols='38' v-model='info.description')
 
       .settings-window
         .settings-item
           .item-name Facebook
           input.item-input(placeholder='Enter link' name='facebook'
-          type='text' v-model='facebook')
+          type='text' v-model='info.facebook')
         .settings-item
           .item-name Twitter
           input.item-input(placeholder='Enter link' name='twitter'
-          type='text' v-model='twitter')
+          type='text' v-model='info.twitter')
         .settings-item
           .item-name VK
           input.item-input(placeholder='Enter link' name='vkontakte'
-          type='text' v-model='vkontakte')
+          type='text' v-model='info.vkontakte')
         .settings-item
           .item-name Instagram
           input.item-input(placeholder='Enter link' name='insagram'
-          type='text' v-model='instagram')
+          type='text' v-model='info.instagram')
 
-    .btn(@click='addCard') Accept
+    .btn(@click='accept') Accept
 </template>
 
 <script>
-import Firebase from '@/appconfig/firebase';
 import router from '@/router';
 
 export default {
   name: 'businessSettings',
-  props: ['userRef', 'username', 'limit'],
+  props: [
+    'userRef',
+    'cardsRef',
+    'limit',
+    'cardname',
+  ],
   data() {
     return {
-      cardname: '',
+      info: {
+        cardname: '',
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        description: '',
+        facebook: '',
+        twitter: '',
+        vkontakte: '',
+        instagram: '',
+      },
 
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      description: '',
-      facebook: '',
-      twitter: '',
-      vkontakte: '',
-      instagram: '',
-
-      cardDataKeys: [
-        'firstName',
-        'lastName',
-        'email',
-        'phone',
-        'description',
-        'facebook',
-        'twitter',
-        'vkontakte',
-        'instagram',
-      ],
       warn: [],
+      tooltipText: '',
+      message: '',
     };
   },
   created() {
-    if (!this.username) {
+    if (!this.cardsRef) {
       router.push('/');
     } else {
       this.getCardData();
+      this.tooltipText = this.cardname ?
+        'Cardname can not be changed' :
+        'Card name should contain only numbers, letters or _ . - characters.';
     }
   },
   methods: {
     getCardData() {
-      Firebase.dbCardsRef.child(this.username).once('value').then((snapshot) => {
+      this.cardsRef.child(this.cardname).once('value').then((snapshot) => {
         if (snapshot.exists()) {
-          this.cardDataKeys.forEach((key) => {
+          Object.keys(this.info).forEach((key) => {
             const dbKey = snapshot.child(key).val();
             if (dbKey) {
-              this.$data[key] = dbKey;
+              this.$set(this.info, key, dbKey);
             }
           });
         }
       });
     },
+    accept() {
+      if (this.cardname) {
+        this.updateInfo();
+      } else {
+        this.addCard();
+      }
+    },
     addCard() {
       this.checkData();
       if (!this.warn.length) {
         this.userRef.child('cardLimit').set(this.limit - 1);
-        this.cardDataKeys.forEach((key) => {
-          const value = this.$data[key];
+        Object.keys(this.info).forEach((key) => {
+          const value = this.info[key];
           if (value) {
-            Firebase.dbCardsRef.child(this.username).child(this.cardname).child(key).set(value);
+            this.cardsRef.child(this.info.cardname).child(key).set(value);
           }
         });
-        Firebase.dbCardsRef.child(this.username).child(this.cardname).child('type').set('business');
-        router.push('/');
+        this.cardsRef.child(this.info.cardname).child('type').set('business');
+      }
+    },
+    updateInfo() {
+      this.checkData();
+      if (!this.warn.length) {
+        Object.keys(this.info).forEach((key) => {
+          const value = this.info[key];
+          if (value) {
+            this.cardsRef.child(this.info.cardname).child(key).set(value);
+          }
+        });
+        this.message = 'Card updated!';
       }
     },
     checkData() {
       this.warn = [];
-      if (!(/^[0-9a-zA-Z_.-]+$/.test(this.cardname))) this.warn.push('tooltip');
-      if (!this.firstName) this.warn.push('firstName');
-      if (!this.lastName) this.warn.push('lastName');
-      if (!this.cardname) this.warn.push('cardname');
+      if (!(/^[0-9a-zA-Z_.-]+$/.test(this.info.cardname))) this.warn.push('tooltip');
+      if (!this.info.firstName) this.warn.push('firstName');
+      if (!this.info.lastName) this.warn.push('lastName');
+      if (!this.info.cardname) this.warn.push('cardname');
+    },
+  },
+  watch: {
+    message() {
+      if (this.message) {
+        setTimeout(() => {
+          this.message = '';
+        }, 3000);
+      }
     },
   },
 };
 </script>
 
 <style lang='scss' scoped>
-@import '~style';
+@import '~settings';
 
-.business-settings {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 0 3rem;
-  position: relative;
-  align-items: center;
-}
-.settings-windows {
-  align-self: stretch;
-  display: flex;
-  justify-content: space-between;
-  align-items: stretch;
-  margin-bottom: 3rem;
-}
-.settings-window {
-  flex-basis: 20%;
-  background-color: $color-white;
-  box-shadow: $shadow;
-  border-radius: $border-radius;
-  padding: 6rem 3rem;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
-.settings-center {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.settings-item {
-  position: relative;
-  &:not(:last-of-type) {
-    margin-bottom: 2rem;
-  }
-}
-.item-name {
-  color: darken($color-darkgray, 20);
-  margin-bottom: 1rem;
-  font-size: 2rem;
-  font-weight: 400;
-}
-.item-input {
-  width: 100%;
-  color: $color-main;
-  border-bottom: 2px solid $color-darkgray;
-  background-color: $color-white;
-  font-size: 1.6rem;
-  font-weight: 400;
-}
 .item-required {
   position: absolute;
   display: block;
