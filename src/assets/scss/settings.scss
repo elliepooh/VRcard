@@ -32,11 +32,10 @@ $color-text: darken($color-darkgray, 20);
   margin-bottom: 3rem;
 }
 .settings-window {
-  flex-basis: 20%;
   background-color: $color-white;
   box-shadow: $shadow;
   border-radius: $border-radius;
-  padding: 6rem 3rem;
+  padding: 3rem;
   display: flex;
   flex-direction: column;
   align-items: stretch;

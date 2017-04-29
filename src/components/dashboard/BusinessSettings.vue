@@ -170,6 +170,10 @@ export default {
 <style lang='scss' scoped>
 @import '~settings';
 
+.settings-window {
+  padding: 6rem 3rem;
+  flex-basis: 20%;
+}
 .item-required {
   position: absolute;
   display: block;
