@@ -17,7 +17,7 @@
         .notification(v-if='message' @click='message = ""') {{ message }}
 
     .content
-      .actions(v-if='!$route.path.includes("settings")')
+      .actions(v-if='showGallery')
         .actions-add
           a.dashboard-btn.btn-add(@click='addCard'
         v-bind:class='{ "btn-add-active": chooseCard }')
@@ -28,7 +28,7 @@
           @click='addGreetingCard' key='greeting')
         a.dashboard-btn.btn-preview(href='preview-business' target='_blank')
 
-      .gallery(v-if='!$route.path.includes("settings") && username')
+      .gallery(v-if='showGallery')
         .card(v-if='cards.length')
           figure.card-preview
             img.card-img
@@ -46,7 +46,8 @@
         a.dashboard-btn.btn-settings(@click='showSettings'
         v-bind:class='{ "btn-active": $route.path.includes("settings") }')
         transition(name='vertical-toggle')
-          a.dashboard-btn.btn-brush(v-if='$route.path.includes("business-settings")'
+          a.dashboard-btn.btn-brush(v-if='$route.path.includes("business")'
+          v-bind:class='{ "btn-active": $route.path.includes("assets") }'
           @click='showBusinessAssets')
 
       nav.pagination(v-if='Object.keys(cards).length > 1 && !$route.path.includes("settings")')
@@ -94,6 +95,7 @@ export default {
 
       message: '',
 
+      showGallery: false,
       chooseCard: false,
       showModal: false,
 
@@ -158,6 +160,8 @@ export default {
           });
         }
       });
+
+      this.showGallery = true;
     },
     addCard() {
       if (this.limit > 0) {
@@ -193,6 +197,7 @@ export default {
           cardname: this.cards[this.current].cardname,
         },
       });
+      this.showGallery = false;
     },
     showBusinessAssets() {
       router.push({
@@ -202,6 +207,7 @@ export default {
           cardname: this.cards[this.current].cardname,
         },
       });
+      this.showGallery = false;
     },
     uploadPhoto(event) {
       const file = event.target.files[0];

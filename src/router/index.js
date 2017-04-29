@@ -6,6 +6,8 @@ import Dashboard from '@/components/Dashboard';
 import Preview from '@/components/Preview';
 
 import BusinessSettings from '@/components/dashboard/BusinessSettings';
+import BusinessAssets from '@/components/dashboard/BusinessAssets';
+
 // import GreetingSettings from '@/components/dashboard/GreetingSettings';
 
 Vue.use(Router);
@@ -26,6 +28,11 @@ export default new Router({
           path: 'business-settings',
           name: 'business-settings',
           component: BusinessSettings,
+          props: true,
+        }, {
+          path: 'business-assets',
+          name: 'business-assets',
+          component: BusinessAssets,
           props: true,
         },
       ],
