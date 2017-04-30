@@ -1,37 +1,49 @@
 <template lang='pug'>
   .preview
-    header.preview__header
+    header.header
       .logo
-        a.logo__link
-        h1.logo__title IMENGINE
-      .preview__switch-box
-        span.switch__label Greeting
-        label.switch
-          input(type='checkbox' v-model='greetingCards')
-          .switch__slider
-        span.switch__label Business
-    .preview__nav-arrow
-      a.nav-arrow__btn
-      a.nav-arrow__btn
+        a.logo-img
+        h1.logo-title IMENGINE
+      .switch-box
+        span.switch-label Greeting
+        .switch-slider
+          .switch-point(:class='{ "switch-business": showBusinessCards }'
+            @click='switchCardType')
+        span.switch-label Business
+    .nav-arrow
+      a.nav-btn
+      a.nav-btn
     router-view
 </template>
 
 <script>
+import router from '@/router';
+
 export default {
   name: 'preview',
   data() {
     return {
-      greetingCards: '',
+      showBusinessCards: false,
     };
+  },
+  created() {
+    router.push({ name: 'greeting-card' });
+  },
+  methods: {
+    switchCardType() {
+      const routerName = this.showBusinessCards ? 'business-card' : 'greeting-card';
+      router.push({ name: routerName });
+    },
   },
 };
 </script>
 
-<style lang='scss'>
-$color: #6543DD;
+<style lang='scss' scoped>
+@import '~global';
+
 $shadow: 0px 8px 22px rgba(0, 0, 0, 0.3);
 
-.preview__header {
+.header {
   position: absolute;
   top: 3rem;
   left: 3rem;
@@ -39,11 +51,11 @@ $shadow: 0px 8px 22px rgba(0, 0, 0, 0.3);
   display: flex;
   justify-content: space-between;
 }
-.preview__switch-box {
+.switch-box {
   position: absolute;
   top: 0rem;
   left: calc(50% - 18rem);
-  background-color: #fff;
+  background-color: $color-white;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -53,29 +65,26 @@ $shadow: 0px 8px 22px rgba(0, 0, 0, 0.3);
   padding: 0 3rem;
   box-shadow: $shadow;
 }
-.switch__label {
-  color: #797979;
+.switch-label {
+  color: $color-darkgray;
   font-size: 2rem;
   font-weight: 400;
   text-transform: uppercase;
 }
-.switch {
+.switch-slider {
   position: relative;
   width: 6rem;
   height: 2.6rem;
   border-radius: 3rem;
-  input {
-    display: none;
-  }
 }
-.switch__slider {
+.switch-point {
   position: absolute;
   cursor: pointer;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #AD99F9;
+  background-color: lighten($color-main, 20);
   transition: .4s ease-in;
   border-radius: 3rem;
   &::after {
@@ -85,7 +94,7 @@ $shadow: 0px 8px 22px rgba(0, 0, 0, 0.3);
     height: 1.8rem;
     left: 0.5rem;
     bottom: 0.5rem;
-    background-color: #fff;
+    background-color: $color-white;
     border-radius: 50%;
     transition: .4s ease-in;
   }
@@ -96,27 +105,18 @@ $shadow: 0px 8px 22px rgba(0, 0, 0, 0.3);
     height: 3.2rem;
     left: -0.2rem;
     bottom: -0.2rem;
-    background-color: $color;
+    background-color: $color-main;
     border-radius: 50%;
     transition: .4s ease-in;
   }
 }
-input:checked + .switch__slider::before {
+.switch-business + .switch-point::before {
   transform: translateX(3.2rem);
 }
-input:checked + .switch__slider::after {
+.switch-business + .switch-point::after {
   transform: translateX(3.2rem);
 }
-.preview__close-btn {
-  width: 6rem;
-  height: 6rem;
-  border-radius: 50%;
-  background: #fff url('../assets/icons/plus.svg') center / 80% no-repeat;
-  cursor: pointer;
-  transform: rotate(45deg);
-  box-shadow: 4px 4px 22px rgba(0, 0, 0, 0.3);
-}
-.preview__nav-arrow {
+.nav-arrow {
   position: absolute;
   top: calc(50% - 4rem);
   left: 3rem;
@@ -124,10 +124,10 @@ input:checked + .switch__slider::after {
   display: flex;
   justify-content: space-between;
 }
-.nav-arrow__btn {
+.nav-btn {
   width: 8rem;
   height: 8rem;
-  background: #fff url('../assets/icons/arrow.svg') center 80% / 80% no-repeat;
+  background: $color-white url('../assets/icons/arrow.svg') center 80% / 80% no-repeat;
   cursor: pointer;
   &:first-of-type {
     transform: rotate(-90deg);

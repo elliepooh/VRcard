@@ -7,7 +7,7 @@
       .header-profile
         .profile-name {{ username }}
         .profile-avatar(:style='{ backgroundImage: `url(${userPhotoURL})` }'
-        @click='showModal = true')
+          @click='showModal = true')
         .profile-more
           .profile-menu
             a.menu-item(@click='showModal = true') Settings
@@ -20,12 +20,14 @@
       .actions(v-if='showGallery')
         .actions-add
           a.dashboard-btn.btn-add(@click='addCard'
-        v-bind:class='{ "btn-add-active": chooseCard }')
+            v-bind:class='{ "btn-add-active": chooseCard }')
         transition-group(name='vertical-toggle' tag='div')
           a.dashboard-btn.btn-business(v-if='chooseCard'
-          @click='addBusinessCard' key='business')
+            @click='addBusinessCard'
+            key='business')
           a.dashboard-btn.btn-greeting(v-if='chooseCard'
-          @click='addGreetingCard' key='greeting')
+            @click='addGreetingCard'
+            key='greeting')
         a.dashboard-btn.btn-preview(href='preview-business' target='_blank')
 
       .gallery(v-if='showGallery')
@@ -41,13 +43,13 @@
 
       nav.settings-board
         router-link.dashboard-btn.btn-home(to='/'
-        v-bind:class='{ "btn-active": $route.path === "/dashboard" }')
+          v-bind:class='{ "btn-active": $route.path === "/dashboard" }')
         a.dashboard-btn.btn-settings(@click='showSettings'
-        v-bind:class='{ "btn-active": $route.path.includes("settings") }')
+          v-bind:class='{ "btn-active": $route.path.includes("settings") }')
         transition(name='vertical-toggle')
           a.dashboard-btn.btn-brush(v-if='$route.path.includes("business")'
-          v-bind:class='{ "btn-active": $route.path.includes("assets") }'
-          @click='showBusinessAssets')
+            v-bind:class='{ "btn-active": $route.path.includes("assets") }'
+            @click='showBusinessAssets')
 
       nav.pagination(v-if='Object.keys(cards).length > 1 && !$route.path.includes("settings")')
         a.point(v-for='card in cards')
@@ -56,23 +58,33 @@
       .modal(v-if='showModal')
         .modal-assets
           .assets-avatar(:style='{ backgroundImage: `url(${userPhotoURL})` }')
-          input.assets-upload(name='photo' id='photo' type='file'
-          @change='uploadPhoto')
+          input.assets-upload(name='photo'
+            id='photo'
+            type='file'
+            @change='uploadPhoto')
           label.btn(for='photo') Upload photo
         .modal-info
           .info-email
             .info-title Change your email
             input.info-input(placeholder='Old email'
-            name='email' type='email' v-model='oldEmail')
+              name='email'
+              type='email'
+              v-model='oldEmail')
             input.info-input(placeholder='New email'
-            name='email' type='email' v-model='newEmail')
+              name='email'
+              type='email'
+              v-model='newEmail')
             a.btn(@click='updateEmail') Accept
           .info-password
             .info-title Change your password
             input.info-input(placeholder='Old password'
-            name='password' type='password' v-model='oldPassword')
+              name='password'
+              type='password'
+              v-model='oldPassword')
             input.info-input(placeholder='New password'
-            name='password' type='password' v-model='newPassword')
+              name='password'
+              type='password'
+              v-model='newPassword')
             a.btn Accept
 </template>
 

@@ -9,54 +9,78 @@
         .settings-item
           .item-name(v-bind:class='{ "item-warn": warn.includes("firstName") }') First name
           input.item-input.input-required(placeholder='Enter your first name'
-          name='firsName' type='text' v-model='info.firstName' required)
+            name='firsName'
+            type='text'
+            v-model='info.firstName'
+            required)
           span.item-required *
         .settings-item
           .item-name(v-bind:class='{ "item-warn": warn.includes("lastName") }') Last name
           input.item-input.input-required(placeholder='Enter your last name'
-          name='lastName' type='text' v-model='info.lastName' required)
+            name='lastName'
+            type='text'
+            v-model='info.lastName'
+            required)
           span.item-required *
         .settings-item
           .item-name Email
-          input.item-input(placeholder='Enter your email' name='email'
-          type='email' v-model='info.email')
+          input.item-input(placeholder='Enter your email'
+            name='email'
+            type='email'
+            v-model='info.email')
         .settings-item
           .item-name Phone number
-          input.item-input(placeholder='Enter your phone number' name='phone'
-          type='tel' v-model='info.phone')
+          input.item-input(placeholder='Enter your phone number'
+            name='phone'
+            type='tel'
+            v-model='info.phone')
 
       .settings-multiple
         .settings-window.card-name
           .settings-item
             .item-name(v-bind:class='{ "item-warn": warn.includes("cardname") }') Card name
             input.item-input.input-required(placeholder='Enter card name'
-            name='cardname' type='text' v-model='info.cardname' required
-            v-bind:disabled='cardname')
+              name='cardname'
+              type='text'
+              v-model='info.cardname'
+              required
+              v-bind:disabled='cardname')
             span.item-required *
             .item-tooltip(v-bind:class='{ "item-warn": warn.includes("tooltip") }') {{ tooltipText }}
         .settings-window.card-description
           .settings-item
             .item-name Description
             textarea.item-description(placeholder='Tell something about you'
-            name='description' rows='7' cols='38' v-model='info.description')
+              name='description'
+              rows='7'
+              cols='38'
+              v-model='info.description')
 
       .settings-window
         .settings-item
           .item-name Facebook
-          input.item-input(placeholder='Enter link' name='facebook'
-          type='text' v-model='info.facebook')
+          input.item-input(placeholder='Enter link'
+            name='facebook'
+            type='text'
+            v-model='info.facebook')
         .settings-item
           .item-name Twitter
-          input.item-input(placeholder='Enter link' name='twitter'
-          type='text' v-model='info.twitter')
+          input.item-input(placeholder='Enter link'
+            name='twitter'
+            type='text'
+            v-model='info.twitter')
         .settings-item
           .item-name VK
-          input.item-input(placeholder='Enter link' name='vkontakte'
-          type='text' v-model='info.vkontakte')
+          input.item-input(placeholder='Enter link'
+            name='vkontakte'
+            type='text'
+            v-model='info.vkontakte')
         .settings-item
           .item-name Instagram
-          input.item-input(placeholder='Enter link' name='insagram'
-          type='text' v-model='info.instagram')
+          input.item-input(placeholder='Enter link'
+            name='insagram'
+            type='text'
+            v-model='info.instagram')
 
     .btn(@click='accept') Accept
 </template>

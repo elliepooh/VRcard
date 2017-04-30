@@ -10,18 +10,35 @@
           .settings-item
             .item-name Choose color
             .item-line
-              input.item-radio(type='radio' id='item1' value='6DF2A8' v-model='info.color')
+              input.item-radio(type='radio'
+                id='item1'
+                value='6DF2A8'
+                v-model='info.color')
               label.item-color.color-green(for='item1')
-              input.item-radio(type='radio' id='item2' value='FF8F6D' v-model='info.color')
+              input.item-radio(type='radio'
+                id='item2'
+                value='FF8F6D'
+                v-model='info.color')
               label.item-color.color-orange(for='item2')
-              input.item-radio(type='radio' id='item3' value='50E3C2' v-model='info.color')
+              input.item-radio(type='radio'
+                id='item3'
+                value='50E3C2'
+                v-model='info.color')
               label.item-color.color-blue(for='item3')
-              input.item-radio(type='radio' id='item4' value='BD10E0' v-model='info.color')
+              input.item-radio(type='radio'
+                id='item4'
+                value='BD10E0'
+                v-model='info.color')
               label.item-color.color-pink(for='item4')
-              input.item-radio(type='radio' id='item5' value='4A4A4A' v-model='info.color')
+              input.item-radio(type='radio'
+                id='item5'
+                value='4A4A4A'
+                v-model='info.color')
               label.item-color.color-gray(for='item5')
             input.item-input(placeholder='Enter color hex'
-            name='color' type='text' v-model='info.color')
+              name='color'
+              type='text'
+              v-model='info.color')
 
         .settings-window.card-photo
           .settings-item
@@ -35,11 +52,12 @@
         .settings-item
           .item-name Choose your background
           .item-background(v-for='preview in previews'
-          v-show='preview.name === info.panorama'
-          v-bind:style='{ backgroundImage: `url(${preview.url})` }')
+            v-show='preview.name === info.panorama'
+            v-bind:style='{ backgroundImage: `url(${preview.url})` }')
           .item-line.item-nav
-            a.nav-point(v-for='preview in previews' @click='info.panorama = preview.name'
-            v-bind:class='{ "point-active": preview.name === info.panorama }')
+            a.nav-point(v-for='preview in previews'
+              @click='info.panorama = preview.name'
+              v-bind:class='{ "point-active": preview.name === info.panorama }')
 
     .btn(@click='updateInfo') Accept
 </template>
