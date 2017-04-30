@@ -30,8 +30,7 @@
 
       .gallery(v-if='showGallery')
         .card(v-if='cards.length')
-          figure.card-preview
-            img.card-img
+          .card-img(:style='{ backgroundImage: `url(${cards[current].photoURL})` }')
           .card-content
             h3.card-title {{ cards[current].firstName }} {{ cards[current].lastName }}
             span.card-email {{ cards[current].email }}
@@ -139,6 +138,7 @@ export default {
         'description',
         'photo',
         'type',
+        'photoURL',
       ];
 
       this.cardsRef.once('value').then((snapshot) => {
@@ -205,6 +205,7 @@ export default {
         params: {
           cardsRef: this.cardsRef,
           cardname: this.cards[this.current].cardname,
+          uid: this.user.uid,
         },
       });
       this.showGallery = false;
@@ -438,9 +439,11 @@ export default {
   display: flex;
   position: relative;
 }
-.card-preview {
+.card-img {
   flex: 1;
   background-color: $color-gray;
+  background-size: cover;
+  background-position: center;
 }
 .card-content {
   flex: 1;
@@ -456,7 +459,8 @@ export default {
   margin-bottom: 2rem;
 }
 .card-email {
-
+  color: $color-dark;
+  font-size: 1.8rem;
 }
 .card-description {
   overflow: hidden;

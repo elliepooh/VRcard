@@ -26,7 +26,7 @@
         .settings-window.card-photo
           .settings-item
             .item-name Choose photo
-            .item-photo(:style='{ backgroundImage: `` }')
+            .item-photo(:style='{ backgroundImage: `url(${info.photoURL})` }')
             input.item-upload(name='photo' id='photo' type='file'
             @change='uploadPhoto')
             label.btn(for='photo') Upload
@@ -34,14 +34,14 @@
       .settings-window.card-background
         .settings-item
           .item-name Choose your background
-          .item-background(v-for='(preview, index) in previews'
-          v-show='index === currentIndex'
+          .item-background(v-for='preview in previews'
+          v-show='preview.name === info.panorama'
           v-bind:style='{ backgroundImage: `url(${preview.url})` }')
           .item-line.item-nav
-            a.nav-point(v-for='(preview, index) in previews' @click='currentIndex = index'
-            v-bind:class='{ "point-active": index === currentIndex }')
+            a.nav-point(v-for='preview in previews' @click='info.panorama = preview.name'
+            v-bind:class='{ "point-active": preview.name === info.panorama }')
 
-    .btn(@click='') Accept
+    .btn(@click='updateInfo') Accept
 </template>
 
 <script>
@@ -53,13 +53,15 @@ export default {
   props: [
     'cardsRef',
     'cardname',
+    'uid',
   ],
   data() {
     return {
       info: {
         color: '',
+        panorama: '',
+        photoURL: '',
       },
-      checkColorHex: [],
 
       previewsNames: [
         'city.jpg',
@@ -67,7 +69,6 @@ export default {
         'winter.jpg',
       ],
       previews: [],
-      currentIndex: 1,
 
       message: '',
     };
@@ -76,7 +77,7 @@ export default {
     if (!this.cardsRef) {
       router.push('/');
     } else {
-      // this.getCardData();
+      this.getCardData();
       this.getPreviews();
     }
   },
@@ -94,24 +95,47 @@ export default {
       });
     },
     updateInfo() {
-      if (!this.warn.length) {
-        this.cardDataKeys.forEach((key) => {
-          if (key === 'cardname') return;
-          const value = this.$data[key];
+      if (this.checkColorType()) {
+        Object.keys(this.info).forEach((key) => {
+          const value = this.info[key];
           if (value) {
-            this.cardsRef.child(this.info.cardname).child(key).set(value);
+            this.cardsRef.child(this.cardname).child(key).set(value);
           }
         });
         this.message = 'Card updated!';
+      } else {
+        this.message = 'Invalid color hex type';
       }
     },
-    uploadPhoto() {},
+    checkColorType() {
+      return /^[0-9A-F]{6}$/i.test(this.info.color);
+    },
+    uploadPhoto(event) {
+      const file = event.target.files[0];
+      const storageFileRef = Firebase.assetsPhotosRef.child(this.uid);
+      const task = storageFileRef.put(file);
+      task.on('state_changed', () => {
+        storageFileRef.getDownloadURL().then((url) => {
+          this.info.photoURL = url;
+        });
+      });
+    },
     getPreviews() {
       this.previewsNames.forEach((name) => {
         Firebase.previewsRef.child('business').child(name).getDownloadURL().then((url) => {
           this.previews.push({ name, url });
+          this.info.panorama = this.info.panorama || name;
         });
       });
+    },
+  },
+  watch: {
+    message() {
+      if (this.message) {
+        setTimeout(() => {
+          this.message = '';
+        }, 3000);
+      }
     },
   },
 };
@@ -200,11 +224,13 @@ export default {
   color: $color-text;
 }
 .item-photo {
-  width: 10rem;
-  height: 10rem;
+  min-width: 10rem;
+  min-height: 10rem;
   background-color: $color-darkgray;
-  border-radius: 50%;
   margin: 0 auto;
+  background-size: cover;
+  background-position: center;
+  border-radius: $border-radius;
 }
 .item-upload {
   width: 0.1px;
@@ -215,6 +241,7 @@ export default {
 }
 .card-background {
   flex: 3;
+  padding-bottom: 0;
   .settings-item {
     align-self: stretch;
   }
@@ -222,7 +249,7 @@ export default {
 .item-background {
   height: 30rem;
   background-size: contain;
-  margin-bottom: 1rem;
+  margin-bottom: 3rem;
 }
 .item-nav {
   width: 20%;
