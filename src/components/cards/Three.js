@@ -10,7 +10,7 @@ export default class Three {
     color = 0xffffff,
     cameraPositionX = 0,
     cameraPositionY = 0,
-    cameraPositionZ = 20,
+    cameraPositionZ = 500,
   }) {
     this.scene = null;
     this.camera = null;
@@ -30,7 +30,7 @@ export default class Three {
   }
   init() {
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(50, this.width / this.height, 0.1, 10000);
+    this.camera = new THREE.PerspectiveCamera(75, this.width / this.height, 0.1, 1000);
     this.camera.position.set(this.cameraPositionX, this.cameraPositionY, this.cameraPositionZ);
     this.camera.lookAt(this.scene.position);
 
