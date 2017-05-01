@@ -6,13 +6,9 @@
         h1.logo-title IMENGINE
       .switch-box
         span.switch-label Greeting
-        .switch-slider
-          .switch-point(:class='{ "switch-business": showBusinessCards }'
-            @click='switchCardType')
+        .switch-slider(:class='{ "switch-business": showBusinessCards }')
+          .switch-point(@click='switchCardType')
         span.switch-label Business
-    .nav-arrow
-      a.nav-btn
-      a.nav-btn
     router-view
 </template>
 
@@ -31,6 +27,7 @@ export default {
   },
   methods: {
     switchCardType() {
+      this.showBusinessCards = !this.showBusinessCards;
       const routerName = this.showBusinessCards ? 'business-card' : 'greeting-card';
       router.push({ name: routerName });
     },
@@ -41,8 +38,10 @@ export default {
 <style lang='scss' scoped>
 @import '~global';
 
-$shadow: 0px 8px 22px rgba(0, 0, 0, 0.3);
-
+.preview {
+  width: 100%;
+  height: 100%;
+}
 .header {
   position: absolute;
   top: 3rem;
@@ -50,6 +49,7 @@ $shadow: 0px 8px 22px rgba(0, 0, 0, 0.3);
   width: calc(100% - 6rem);
   display: flex;
   justify-content: space-between;
+  z-index: 200;
 }
 .switch-box {
   position: absolute;
@@ -110,32 +110,10 @@ $shadow: 0px 8px 22px rgba(0, 0, 0, 0.3);
     transition: .4s ease-in;
   }
 }
-.switch-business + .switch-point::before {
+.switch-business > .switch-point::before {
   transform: translateX(3.2rem);
 }
-.switch-business + .switch-point::after {
+.switch-business > .switch-point::after {
   transform: translateX(3.2rem);
-}
-.nav-arrow {
-  position: absolute;
-  top: calc(50% - 4rem);
-  left: 3rem;
-  width: calc(100% - 6rem);
-  display: flex;
-  justify-content: space-between;
-}
-.nav-btn {
-  width: 8rem;
-  height: 8rem;
-  background: $color-white url('../assets/icons/arrow.svg') center 80% / 80% no-repeat;
-  cursor: pointer;
-  &:first-of-type {
-    transform: rotate(-90deg);
-    box-shadow: -4px 4px 22px rgba(0, 0, 0, 0.3);
-  }
-  &:last-of-type {
-    transform: rotate(90deg);
-    box-shadow: 4px 4px 22px rgba(0, 0, 0, 0.3);
-  }
 }
 </style>

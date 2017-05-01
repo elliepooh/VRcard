@@ -1,9 +1,13 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
+import Preview from '@/components/Preview';
+
+import BusinessCard from '@/components/cards/BusinessCard';
+import GreetingCard from '@/components/cards/GreetingCard';
+
 import SignIn from '@/components/SignIn';
 import Dashboard from '@/components/Dashboard';
-import Preview from '@/components/Preview';
 
 import BusinessSettings from '@/components/dashboard/BusinessSettings';
 import BusinessAssets from '@/components/dashboard/BusinessAssets';
@@ -17,6 +21,21 @@ export default new Router({
   routes: [
     {
       path: '/',
+      name: 'preview',
+      component: Preview,
+      children: [
+        {
+          path: 'greeting-card',
+          name: 'greeting-card',
+          component: GreetingCard,
+        }, {
+          path: 'business-card',
+          name: 'business-card',
+          component: BusinessCard,
+        },
+      ],
+    }, {
+      path: '/signin',
       name: 'signin',
       component: SignIn,
     }, {
@@ -36,16 +55,6 @@ export default new Router({
           props: true,
         },
       ],
-    }, {
-      path: '/preview-business',
-      name: 'business-card',
-      component: Preview,
-      props: true,
-    }, {
-      path: '/preview-greeting',
-      name: 'greeting-card',
-      component: Preview,
-      props: true,
     },
   ],
 });
