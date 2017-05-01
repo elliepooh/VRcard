@@ -361,12 +361,12 @@ export default {
 }
 .actions-add,
 .btn-preview {
-  box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: $shadow;
   border-radius: $border-radius;
   background-color: $color-white;
   z-index: 10;
   &:hover {
-    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: $shadow-hover;
   }
 }
 .btn-add {
@@ -399,12 +399,12 @@ export default {
 }
 .settings-board {
   width: 8rem;
-  box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: $shadow;
   border-radius: $border-radius;
   background-color: $color-white;
   margin-left: 6rem;
   &:hover {
-    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: $shadow-hover;
   }
 }
 .btn-home {
