@@ -3,9 +3,11 @@
 </template>
 
 <script>
-/* eslint-disable no-param-reassign */
 import * as THREE from 'three';
 import Three from '../Three';
+
+import Chameleon from './obj/chameleon';
+import Fly from './obj/fly';
 
 export default {
   name: 'chameleon',
@@ -15,16 +17,9 @@ export default {
       raycaster: null,
 
       chameleon: null,
-      head: null,
-
       branch: null,
-
       fly: null,
-      rightWing: null,
-      leftWing: null,
-      wingAngle: 0,
 
-      material: null,
       mouse: null,
 
       width: 0,
@@ -36,8 +31,8 @@ export default {
       container: this.$el,
       color: 0xF2A9B4,
       cameraPositionX: 30,
-      cameraPositionY: 15,
-      cameraPositionZ: 20,
+      cameraPositionY: 10,
+      cameraPositionZ: 10,
     });
     this.width = this.$el.clientWidth;
     this.height = this.$el.clientHeight;
@@ -52,9 +47,7 @@ export default {
       this.mouse = new THREE.Vector2();
 
       this.addLights();
-      this.drawChameleon();
-      this.drawBranch();
-      this.drawFly();
+      this.draw();
 
       window.addEventListener('mousemove', this.onMouseMove);
     },
@@ -75,243 +68,47 @@ export default {
       directLight2.position.set(-27, 18, 6);
       this.three.scene.add(directLight2);
     },
-    drawChameleon() {
-      this.chameleon = new THREE.Object3D();
-      this.chameleon.position.set(-1, 3, 2.7);
-      this.chameleon.rotation.set(this.rad(18.84), 0, this.rad(2.2));
-      this.three.scene.add(this.chameleon);
+    draw() {
+      this.chameleon = new Chameleon();
+      this.chameleon.group.position.set(3, 3, -10);
+      this.three.scene.add(this.chameleon.group);
 
-      this.material = new THREE.MeshStandardMaterial({
-        color: 0x1CCCA3,
-        roughness: 1,
-        shading: THREE.FlatShading,
-      });
+      this.fly = new Fly();
+      this.fly.group.position.set(0, 0, 15);
+      this.three.scene.add(this.fly.group);
 
-      this.drawHead();
-      this.drawBody();
-      this.drawTail();
-      this.drawLegs();
-
-      this.chameleon.traverse((object) => {
-        if (object instanceof THREE.Mesh) {
-          object.castShadow = true;
-          object.receiveShadow = true;
-        }
-      });
+      this.drawBranch();
     },
     drawBranch() {
-      this.branch = this.drawCylinder(0x17B26F, 0.76, 1.12, 2.14, 5);
-      this.branch.position.set(-2.76, -5.67, -7.86);
-      this.branch.rotation.set(this.rad(85.18), this.rad(4.14), this.rad(-20.4));
-      this.branch.scale.set(3.78, 11.92, 2.72);
-      this.branch.castShadow = true;
-      this.branch.receiveShadow = true;
-      this.three.scene.add(this.branch);
-    },
-    drawFly() {
-      const flyGeometry = new THREE.BoxGeometry(1, 1, 1);
-      const flyMaterial = new THREE.MeshStandardMaterial({
-        color: 0x3F3F3F,
-        roughness: 1,
-        shading: THREE.FlatShading,
-      });
-      this.fly = new THREE.Mesh(flyGeometry, flyMaterial);
-      this.fly.position.set(0, 12.71, 19.08);
-      this.three.scene.add(this.fly);
-
-      this.rightWing = this.drawCylinder(0xffffff, 0.42, 0.08, 1.26, 4);
-      this.rightWing.position.set(0, 0.2, 0.6);
-      this.rightWing.rotation.set(Math.PI / 4, 0, Math.PI / 4);
-      this.rightWing.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, 0.21, 0.04));
-      this.fly.add(this.rightWing);
-
-      this.leftWing = this.rightWing.clone();
-      this.leftWing.position.z = -this.rightWing.position.z;
-      this.fly.add(this.leftWing);
-    },
-    drawHead() {
-      const headGeometry = new THREE.SphereGeometry(5, 4, 4);
-      this.head = new THREE.Mesh(headGeometry, this.material);
-      this.head.rotation.set(this.rad(90), this.rad(45), 0);
-      this.chameleon.add(this.head);
-
-      // draw eyes
-      const rightEye = this.drawSkinCylinder(2, 1.3, 1.4, 5);
-      rightEye.position.set(3, 1.6, 1.6);
-      rightEye.rotation.set(this.rad(-27.2), this.rad(-45), this.rad(90));
-      this.head.add(rightEye);
-
-      const rightEyeWhite = this.drawCylinder(0xffffff, 1.26, 0.78, 1.14, 5);
-      rightEyeWhite.position.set(0.02, -0.37, -0.06);
-      rightEye.add(rightEyeWhite);
-
-      const rightEyeBlack = this.drawCylinder(0x3F3F3F, 0.86, 0.36, 1.14, 5);
-      rightEyeBlack.position.set(-0.01, -0.27, -0.01);
-      rightEyeWhite.add(rightEyeBlack);
-
-      const leftEye = rightEye.clone();
-      leftEye.position.set(-1.62, 1.47, -2.92);
-      leftEye.rotation.set(this.rad(25), this.rad(-225), this.rad(82.8));
-      this.head.add(leftEye);
-
-      const leftEyeWhite = rightEyeWhite.clone();
-      leftEyeWhite.position.set(0.02, -0.37, -0.06);
-      leftEye.add(leftEyeWhite);
-
-      const leftEyeBlack = rightEyeBlack.clone();
-      leftEyeBlack.position.set(-0.01, -0.27, -0.01);
-      leftEyeWhite.add(leftEyeBlack);
-
-      // draw nose
-      const nose = this.drawSkinCylinder(0.88, 3.52, 1.96, 4);
-      nose.position.set(-0.02, 4.53, 0);
-      this.head.add(nose);
-
-      // draw cap
-      const cap = this.drawSkinCylinder(0.96, 3.5, 4, 4);
-      cap.position.set(1.88, -1.54, -1.85);
-      this.head.add(cap);
-    },
-    drawBody() {
-      const body = new THREE.Object3D();
-      body.position.set(4.19, -4.51, -2.7);
-      body.rotation.set(this.rad(62.4), this.rad(45), 0);
-      this.chameleon.add(body);
-
-      const neck = this.drawSkinCylinder(3.48, 7, 8, 4);
-      neck.position.set(0, -1.46, -5.85);
-      body.add(neck);
-
-      const torso = this.drawSkinCylinder(7, 3.9, 6, 4);
-      torso.position.set(-0.03, -8.4, -5.87);
-      body.add(torso);
-
-      const back = this.drawSkinCylinder(3.9, 1.4, 3, 4);
-      back.position.set(-0.03, -12.9, -5.87);
-      body.add(back);
-    },
-    drawTail() {
-      const tail = this.drawSkinCylinder(2.14, 1.2, 8.7, 4);
-      tail.position.set(0.05, -7.85, -17.43);
-      tail.rotation.set(this.rad(48), this.rad(45), 0);
-      this.chameleon.add(tail);
-
-      const tailPart1 = this.drawSkinCylinder(1.2, 1, 13, 4);
-      tailPart1.position.set(-3.76, -6.24, 3.92);
-      tailPart1.rotation.set(this.rad(67.4), this.rad(45), this.rad(-116.6));
-      tail.add(tailPart1);
-
-      const tailPart2 = this.drawSkinCylinder(0.78, 1, 7, 4);
-      tailPart2.position.set(-8.46, -5.13, 8.86);
-      tailPart2.rotation.set(this.rad(17.6), this.rad(3), this.rad(16.2));
-      tail.add(tailPart2);
-
-      const tailPart3 = this.drawSkinCylinder(1.2, 0.76, 5, 4);
-      tailPart3.position.set(-7.55, -1.35, 7.96);
-      tailPart3.rotation.set(this.rad(67.4), this.rad(45), this.rad(-116.6));
-      tail.add(tailPart3);
-
-      const tailPart4 = this.drawSkinCylinder(1.2, 0.74, 4.06, 4);
-      tailPart4.position.set(-5.24, -1.2, 5.52);
-      tailPart4.rotation.set(this.rad(15.4), this.rad(2.8), this.rad(13));
-      tail.add(tailPart4);
-    },
-    drawLegs() {
-      const rightLeg = this.drawSkinCylinder(1.56, 1, 3.96, 4);
-      rightLeg.position.set(2.34, -5.86, -4.55);
-      rightLeg.rotation.set(this.rad(-12.6), this.rad(53), 0);
-      this.chameleon.add(rightLeg);
-
-      const finger1 = this.drawSkinCylinder(0.4, 1.04, 2, 4);
-      finger1.position.set(0.32, -1.55, 1.21);
-      finger1.rotation.set(this.rad(105.4), this.rad(41), 0);
-      rightLeg.add(finger1);
-
-      const finger2 = finger1.clone();
-      finger2.position.set(-0.76, -1.5, 0.61);
-      finger2.rotation.set(this.rad(59.8), this.rad(39.6), this.rad(69.6));
-      rightLeg.add(finger2);
-
-      const finger3 = finger1.clone();
-      finger3.position.set(-1.11, -1.57, -0.58);
-      finger3.rotation.set(this.rad(43.2), this.rad(-9.8), this.rad(120.8));
-      rightLeg.add(finger3);
-
-      const leftLeg = rightLeg.clone();
-      leftLeg.position.set(-2.08, -5.86, -4.55);
-      leftLeg.rotation.set(this.rad(-20.6), this.rad(45), 0);
-      this.chameleon.add(leftLeg);
-
-      const backRightLeg = rightLeg.clone();
-      backRightLeg.position.set(2.39, -9.07, -10.93);
-      backRightLeg.rotation.set(this.rad(-19.4), this.rad(51.2), this.rad(4.2));
-      backRightLeg.scale.set(0.7, 0.7, 0.7);
-      this.chameleon.add(backRightLeg);
-
-      const backLeftLeg = backRightLeg.clone();
-      backLeftLeg.position.set(-2.08, -8.9, -10.1);
-      backLeftLeg.rotation.set(this.rad(-18), this.rad(28.6), 0);
-      this.chameleon.add(backLeftLeg);
+      const branch = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.76, 1.12, 2.14, 5),
+        new THREE.MeshStandardMaterial({
+          color: 0x17B26F,
+          roughness: 1,
+          shading: THREE.FlatShading,
+        }),
+      );
+      branch.position.set(1.4, -5.2, -18);
+      branch.rotation.set(this.rad(85.18), this.rad(4.14), this.rad(-20.4));
+      branch.scale.set(3.78, 11.92, 2.72);
+      branch.castShadow = true;
+      branch.receiveShadow = true;
+      this.three.scene.add(branch);
     },
     onMouseMove(event) {
       this.mouse.x = ((event.clientX / this.width) * 2) - 1;
       this.mouse.y = (-(event.clientY / this.height) * 2) + 1;
     },
-    changeColor() {
-      this.raycaster.setFromCamera(this.mouse, this.three.camera);
-      const intersects = this.raycaster.intersectObjects(this.chameleon.children, true);
-
-      if (intersects.length > 0) {
-        if (intersects[0].object.material.color.getHexString() === 'ffffff' ||
-        intersects[0].object.material.color.getHexString() === '3f3f3f') return;
-
-        const time = Date.now() * 0.00005;
-        const h = ((360 * (1.0 + time)) % 360) / 360;
-        intersects[0].object.material.color.setHSL(h, 1.0, 0.6);
-      }
-    },
-    rotateHead() {
-      this.head.lookAt(this.fly.position);
-      this.head.rotation.x += this.rad(90);
-      this.head.rotation.y += this.rad(45);
-      this.head.position.y = 1;
-    },
-    moveFlyWings() {
-      this.wingAngle += 0.5;
-      const wingAmplitude = Math.PI / 8;
-      this.rightWing.rotation.x = (Math.PI / 4) - (Math.cos(this.wingAngle) * wingAmplitude);
-      this.leftWing.rotation.x = (-Math.PI / 4) + (Math.cos(this.wingAngle) * wingAmplitude);
-    },
-    moveFly() {
-      const timer = Date.now() * 0.0001;
-      this.fly.position.x = 4 * Math.cos(timer * 3);
-      this.fly.position.y = 5 * Math.sin(timer * 6);
-    },
     animate() {
       requestAnimationFrame(this.animate.bind(this));
 
-      this.changeColor();
-      this.rotateHead();
+      this.chameleon.changeColor(this.raycaster, this.mouse, this.three.camera);
+      this.chameleon.moveHead(this.fly.group.position);
 
-      this.moveFlyWings();
-      this.moveFly();
+      this.fly.moveWings();
+      this.fly.moveFly();
 
       this.three.render();
-    },
-    drawSkinCylinder(rTop, rBottom, height, radialSeg) {
-      const geometry = new THREE.CylinderGeometry(rTop, rBottom, height, radialSeg);
-      const mesh = new THREE.Mesh(geometry, this.material);
-      return mesh;
-    },
-    drawCylinder(materialColor, rTop, rBottom, height, radialSeg) {
-      const geometry = new THREE.CylinderGeometry(rTop, rBottom, height, radialSeg);
-      const material = new THREE.MeshStandardMaterial({
-        color: materialColor,
-        roughness: 1,
-        shading: THREE.FlatShading,
-      });
-      const mesh = new THREE.Mesh(geometry, material);
-      return mesh;
     },
     rad(degrees) {
       return degrees * (Math.PI / 180);
