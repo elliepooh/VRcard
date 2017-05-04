@@ -7,7 +7,8 @@
       .form(v-show='form === "email"')
         h2.form-title Enter your email
         .form-input
-          input.input-line(v-bind='inputAttributes'
+          input.input-line(
+            v-bind='inputAttributes'
             placeholder='anderson@matrix.net'
             v-model='userEmail')
           span.input-required *
@@ -18,7 +19,8 @@
       .form(v-if='form === "password"')
         h2.form-title Enter your password
         .form-input
-          input.input-line(v-bind='inputAttributes'
+          input.input-line(
+            v-bind='inputAttributes'
             placeholder='******'
             v-model='userPassword')
           span.input-required *
@@ -29,7 +31,8 @@
       .signin-form(v-if='form === "username"')
         h2.form-title Enter your username
         .form-input
-          input.input-line(v-bind='inputAttributes'
+          input.input-line(
+            v-bind='inputAttributes'
             placeholder='neo'
             v-model='username')
           span.input-required *
@@ -37,9 +40,11 @@
         span.notification(v-if='notificationMessage') {{ notificationMessage }}
 
     .nav
-      a.nav-point(@click='nextForm("email")'
+      a.nav-point(
+        @click='nextForm("email")'
         v-bind:class='{ "point-active" : form == "email" }')
-      a.nav-point(@click='nextForm("password")'
+      a.nav-point(
+        @click='nextForm("password")'
         v-bind:class='{ "point-active" : form == "password" }')
 </template>
 
