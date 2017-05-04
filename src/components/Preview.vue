@@ -9,6 +9,7 @@
         .switch-slider(:class='{ "switch-business": showBusinessCards }')
           .switch-point(@click='switchCardType')
         span.switch-label Business
+      router-link.dashboard-link(to='/signin')
     router-view
 </template>
 
@@ -115,5 +116,10 @@ export default {
 }
 .switch-business > .switch-point::after {
   transform: translateX(3.2rem);
+}
+.dashboard-link {
+  width: 5rem;
+  height: 5rem;
+  background: url('../assets/icons/dashboard.svg') no-repeat center / contain;
 }
 </style>
