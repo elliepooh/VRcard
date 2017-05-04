@@ -6,7 +6,8 @@
         h1.logo-title IMENGINE
       .header-profile
         .profile-name {{ username }}
-        .profile-avatar(:style='{ backgroundImage: `url(${userPhotoURL})` }'
+        .profile-avatar(
+          :style='{ backgroundImage: `url(${userPhotoURL})` }'
           @click='showModal = true')
         .profile-more
           .profile-menu
@@ -17,48 +18,58 @@
         .notification(v-if='message' @click='message = ""') {{ message }}
 
     .content
-      .actions(v-if='showGallery')
+      .actions(v-if='$route.name === "dashboard"')
         .actions-add
-          a.dashboard-btn.btn-add(@click='addCard'
-            v-bind:class='{ "btn-add-active": chooseCard }')
+          a.dashboard-btn.btn-add(
+            @click='chooseCard'
+            v-bind:class='{ "btn-add-active": showCardTypes }')
         transition-group(name='vertical-toggle' tag='div')
-          a.dashboard-btn.btn-business(v-if='chooseCard'
-            @click='addBusinessCard'
+          a.dashboard-btn.btn-business(
+            v-if='showCardTypes'
+            @click='addCard("business")'
             key='business')
-          a.dashboard-btn.btn-greeting(v-if='chooseCard'
-            @click='addGreetingCard'
+          a.dashboard-btn.btn-greeting(
+            v-if='showCardTypes'
+            @click='addCard("greeting")'
             key='greeting')
         a.dashboard-btn.btn-preview(href='preview-business' target='_blank')
 
-      .gallery(v-if='showGallery')
+      .gallery(v-if='$route.name === "dashboard"')
         .card(v-if='cards.length')
-          .card-img(:style='{ backgroundImage: `url(${cards[current].photoURL})` }')
+          .card-img(:style='{ backgroundImage: `url(${cardData.photoURL || cardData.imageURL})` }')
           .card-content
-            h3.card-title {{ cards[current].firstName }} {{ cards[current].lastName }}
-            span.card-email {{ cards[current].email }}
-            p.card-description {{ cards[current].description }} {{ cards[current].description }}
+            h3.card-title {{ cardData.firstName }} {{ cardData.lastName }}
+            span.card-email {{ cardData.email }}
+            p.card-description {{ cardData.description }} {{ cardData.description }}
           a.btn.btn-view
 
       router-view(:key='$route.path')
 
       nav.settings-board
-        router-link.dashboard-btn.btn-home(to='/'
+        router-link.dashboard-btn.btn-home(
+          to='/dashboard'
           v-bind:class='{ "btn-active": $route.path === "/dashboard" }')
-        a.dashboard-btn.btn-settings(@click='showSettings'
+        a.dashboard-btn.btn-settings(
+          @click='showSettings'
           v-bind:class='{ "btn-active": $route.path.includes("settings") }')
         transition(name='vertical-toggle')
-          a.dashboard-btn.btn-brush(v-if='$route.path.includes("business")'
+          a.dashboard-btn.btn-brush(
+            v-if='$route.path.includes("business")'
             v-bind:class='{ "btn-active": $route.path.includes("assets") }'
             @click='showBusinessAssets')
 
-      nav.pagination(v-if='Object.keys(cards).length > 1 && !$route.path.includes("settings")')
-        a.point(v-for='card in cards')
+      nav.pagination(v-if='cards.length > 1 && $route.name === "dashboard"')
+        a.point(
+          v-for='(card, index) in cards'
+          @click='cardIndex = index'
+          v-bind:class='{ "point-active": index === cardIndex }')
 
       .overlay(v-if='showModal' @click='showModal = false')
       .modal(v-if='showModal')
         .modal-assets
           .assets-avatar(:style='{ backgroundImage: `url(${userPhotoURL})` }')
-          input.assets-upload(name='photo'
+          input.assets-upload(
+            name='photo'
             id='photo'
             type='file'
             @change='uploadPhoto')
@@ -66,22 +77,26 @@
         .modal-info
           .info-email
             .info-title Change your email
-            input.info-input(placeholder='Old email'
+            input.info-input(
+              placeholder='Old email'
               name='email'
               type='email'
               v-model='oldEmail')
-            input.info-input(placeholder='New email'
+            input.info-input(
+              placeholder='New email'
               name='email'
               type='email'
               v-model='newEmail')
             a.btn(@click='updateEmail') Accept
           .info-password
             .info-title Change your password
-            input.info-input(placeholder='Old password'
+            input.info-input(
+              placeholder='Old password'
               name='password'
               type='password'
               v-model='oldPassword')
-            input.info-input(placeholder='New password'
+            input.info-input(
+              placeholder='New password'
               name='password'
               type='password'
               v-model='newPassword')
@@ -106,12 +121,11 @@ export default {
 
       message: '',
 
-      showGallery: false,
-      chooseCard: false,
+      showCardTypes: false,
       showModal: false,
 
       cards: [],
-      current: 0,
+      cardIndex: 0,
 
       oldEmail: '',
       newEmail: '',
@@ -143,7 +157,10 @@ export default {
       });
     },
     getCardsData() {
-      const cardDataKeys = [
+      this.cards = [];
+
+      const businessCardDataKeys = [
+        'cardname',
         'firstName',
         'lastName',
         'email',
@@ -153,10 +170,20 @@ export default {
         'photoURL',
       ];
 
+      const greetingCardDataKeys = [
+        'cardname',
+        'from',
+        'to',
+        'text',
+        'image',
+      ];
+
       this.cardsRef.once('value').then((snapshot) => {
         if (snapshot.exists()) {
           snapshot.forEach((card) => {
             const data = {};
+            const cardDataKeys = card.val().type === 'business' ?
+              businessCardDataKeys : greetingCardDataKeys;
             cardDataKeys.forEach((key) => {
               const dbKey = card.child(key).val();
               if (dbKey) {
@@ -166,28 +193,32 @@ export default {
                   data[key] = dbKey;
                 }
               }
-              data.cardname = card.key;
-              this.cards.push(data);
             });
+            if (card.val().type === 'greeting') {
+              Firebase.previewsRef.child('greeting').child(card.val().image).getDownloadURL().then((url) => {
+                data.imageURL = url;
+              });
+            }
+            data.cardname = card.key;
+            this.cards.push(data);
           });
         }
       });
-
-      this.showGallery = true;
     },
-    addCard() {
+    chooseCard() {
       if (this.limit > 0) {
-        this.chooseCard = !this.chooseCard;
+        this.showCardTypes = !this.showCardTypes;
       }
       this.showCardLimit();
     },
     showCardLimit() {
       this.message = `You have ${this.limit} cards limit`;
     },
-    addBusinessCard() {
+    addCard(type) {
+      const routeName = type === 'business' ? 'business-settings' : 'greeting-settings';
       if (this.limit > 0) {
         router.push({
-          name: 'business-settings',
+          name: routeName,
           params: {
             userRef: this.userRef,
             cardsRef: this.cardsRef,
@@ -198,29 +229,26 @@ export default {
         this.showCardLimit();
       }
     },
-    addGreetingCard() {},
     showSettings() {
-      const routerName = this.cards[this.current].type === 'business' ?
+      const routerName = this.cardData.type === 'business' ?
         'business-settings' : 'greeting-settings';
       router.push({
         name: routerName,
         params: {
           cardsRef: this.cardsRef,
-          cardname: this.cards[this.current].cardname,
+          cardname: this.cardData.cardname,
         },
       });
-      this.showGallery = false;
     },
     showBusinessAssets() {
       router.push({
         name: 'business-assets',
         params: {
           cardsRef: this.cardsRef,
-          cardname: this.cards[this.current].cardname,
+          cardname: this.cardData.cardname,
           uid: this.user.uid,
         },
       });
-      this.showGallery = false;
     },
     uploadPhoto(event) {
       const file = event.target.files[0];
@@ -245,6 +273,11 @@ export default {
     logOut() {
       Firebase.auth.signOut();
       router.push('/');
+    },
+  },
+  computed: {
+    cardData() {
+      return this.cards[this.cardIndex];
     },
   },
   watch: {
@@ -495,7 +528,7 @@ export default {
   width: 100%;
   display: flex;
   justify-content: center;
-  bottom: -20%;
+  bottom: 7rem;
   left: 0;
 }
 .point {
@@ -503,6 +536,7 @@ export default {
   height: 3rem;
   background-color: $color-darkgray;
   border-radius: 50%;
+  cursor: pointer;
   &:not(:last-of-type) {
     margin-right: 2rem;
   }

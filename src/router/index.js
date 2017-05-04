@@ -12,7 +12,7 @@ import Dashboard from '@/components/Dashboard';
 import BusinessSettings from '@/components/dashboard/BusinessSettings';
 import BusinessAssets from '@/components/dashboard/BusinessAssets';
 
-// import GreetingSettings from '@/components/dashboard/GreetingSettings';
+import GreetingSettings from '@/components/dashboard/GreetingSettings';
 
 Vue.use(Router);
 
@@ -52,6 +52,11 @@ export default new Router({
           path: 'business-assets',
           name: 'business-assets',
           component: BusinessAssets,
+          props: true,
+        }, {
+          path: 'greeting-settings',
+          name: 'greeting-settings',
+          component: GreetingSettings,
           props: true,
         },
       ],
