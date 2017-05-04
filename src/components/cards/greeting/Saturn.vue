@@ -1,5 +1,5 @@
 <template lang='pug'>
-  .template
+  .world
 </template>
 
 <script>
@@ -86,10 +86,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.template {
-  width: 100%;
-  height: 100%;
-}
-</style>

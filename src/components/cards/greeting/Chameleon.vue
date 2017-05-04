@@ -1,5 +1,5 @@
 <template lang='pug'>
-  .chameleon
+  .world
 </template>
 
 <script>
@@ -116,10 +116,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.chameleon {
-  width: 100%;
-  height: 100%;
-}
-</style>
