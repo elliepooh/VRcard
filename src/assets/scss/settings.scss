@@ -65,3 +65,70 @@ $color-text: darken($color-darkgray, 20);
   font-size: 1.6rem;
   font-weight: 400;
 }
+.item-description {
+  border: 1px solid $color-darkgray;
+  outline: none;
+  resize: none;
+  padding: 1rem;
+}
+.item-required {
+  position: absolute;
+  display: block;
+  top: 0;
+  right: 0;
+  color: $color-main;
+  font-size: 3rem;
+}
+.item-tooltip {
+  position: absolute;
+  bottom: -4rem;
+  font-style: italic;
+  left: 0;
+  color: $color-darkgray;
+  font-size: 1.4rem;
+}
+.input-required {
+  border-color: $color-main;
+}
+.item-warn {
+  color: #E74949;
+}
+.item-warn ~ .input-required {
+  border-color: #E74949;
+}
+.item-warn ~ .item-required {
+  color: #E74949;
+}
+.card-background {
+  flex: 3;
+  padding-bottom: 0;
+  .settings-item {
+    align-self: stretch;
+  }
+}
+.item-background {
+  height: 30rem;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-bottom: 3rem;
+}
+.item-line {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+.item-nav {
+  width: 20%;
+  margin: 0 auto 2rem;
+}
+.nav-point {
+  width: 2rem;
+  height: 2rem;
+  background-color: $color-darkgray;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.point-active {
+  background-color: $color-main;
+}

@@ -10,7 +10,8 @@
           .settings-item
             .item-name Choose color
             .item-line
-              input.item-radio(type='radio'
+              input.item-radio(
+                type='radio'
                 id='item1'
                 value='6DF2A8'
                 v-model='info.color')
@@ -20,22 +21,26 @@
                 value='FF8F6D'
                 v-model='info.color')
               label.item-color.color-orange(for='item2')
-              input.item-radio(type='radio'
+              input.item-radio(
+                type='radio'
                 id='item3'
                 value='50E3C2'
                 v-model='info.color')
               label.item-color.color-blue(for='item3')
-              input.item-radio(type='radio'
+              input.item-radio(
+                type='radio'
                 id='item4'
                 value='BD10E0'
                 v-model='info.color')
               label.item-color.color-pink(for='item4')
-              input.item-radio(type='radio'
+              input.item-radio(
+                type='radio'
                 id='item5'
                 value='4A4A4A'
                 v-model='info.color')
               label.item-color.color-gray(for='item5')
-            input.item-input(placeholder='Enter color hex'
+            input.item-input(
+              placeholder='Enter color hex'
               name='color'
               type='text'
               v-model='info.color')
@@ -44,18 +49,19 @@
           .settings-item
             .item-name Choose photo
             .item-photo(:style='{ backgroundImage: `url(${info.photoURL})` }')
-            input.item-upload(name='photo' id='photo' type='file'
-            @change='uploadPhoto')
+            input.item-upload(name='photo' id='photo' type='file' @change='uploadPhoto')
             label.btn(for='photo') Upload
 
       .settings-window.card-background
         .settings-item
           .item-name Choose your background
-          .item-background(v-for='preview in previews'
+          .item-background(
+            v-for='preview in previews'
             v-show='preview.name === info.panorama'
             v-bind:style='{ backgroundImage: `url(${preview.url})` }')
           .item-line.item-nav
-            a.nav-point(v-for='preview in previews'
+            a.nav-point(
+              v-for='preview in previews'
               @click='info.panorama = preview.name'
               v-bind:class='{ "point-active": preview.name === info.panorama }')
 
@@ -176,11 +182,6 @@ export default {
 .card-color {
   margin-bottom: 4rem;
 }
-.item-line {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 2rem;
-}
 .item-radio {
   display: none;
 }
@@ -256,31 +257,5 @@ export default {
   opacity: 0;
   overflow: hidden;
   z-index: -1;
-}
-.card-background {
-  flex: 3;
-  padding-bottom: 0;
-  .settings-item {
-    align-self: stretch;
-  }
-}
-.item-background {
-  height: 30rem;
-  background-size: contain;
-  margin-bottom: 3rem;
-}
-.item-nav {
-  width: 20%;
-  margin: 0 auto;
-}
-.nav-point {
-  width: 2rem;
-  height: 2rem;
-  background-color: $color-darkgray;
-  border-radius: 50%;
-  cursor: pointer;
-}
-.point-active {
-  background-color: $color-main;
 }
 </style>
