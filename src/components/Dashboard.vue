@@ -32,14 +32,14 @@
             v-if='showCardTypes'
             @click='addCard("greeting")'
             key='greeting')
-        a.dashboard-btn.btn-preview(href='preview-business' target='_blank')
+        a.dashboard-btn.btn-preview(href='/' target='_blank')
 
       .gallery(v-if='$route.name === "dashboard"')
         .card(v-if='cards.length')
-          .card-img(:style='{ backgroundImage: `url(${cardData.photoURL || cardData.imageURL})` }')
+          .card-img(:style='{ backgroundImage: `url(${cardData.imageURL})` }')
           .card-content
-            h3.card-title {{ cardData.firstName }} {{ cardData.lastName }}
-            span.card-email {{ cardData.email }}
+            h3.card-title {{ cardTitle }}
+            span.card-subtitle {{ cardSubtitle }}
             p.card-description {{ cardData.description }} {{ cardData.description }}
           a.btn.btn-view
 
@@ -165,9 +165,8 @@ export default {
         'lastName',
         'email',
         'description',
-        'photo',
+        'imageURL',
         'type',
-        'photoURL',
       ];
 
       const greetingCardDataKeys = [
@@ -175,7 +174,8 @@ export default {
         'from',
         'to',
         'text',
-        'image',
+        'imageURL',
+        'type',
       ];
 
       this.cardsRef.once('value').then((snapshot) => {
@@ -187,18 +187,13 @@ export default {
             cardDataKeys.forEach((key) => {
               const dbKey = card.child(key).val();
               if (dbKey) {
-                if (key === 'description' && dbKey.length > 300) {
-                  data[key] = dbKey.slice(0, dbKey.slice(0, 300).lastIndexOf('.') + 1);
+                if (key === 'description' && dbKey.length > 200) {
+                  data[key] = dbKey.slice(0, dbKey.slice(0, 200).lastIndexOf('.') + 1);
                 } else {
                   data[key] = dbKey;
                 }
               }
             });
-            if (card.val().type === 'greeting') {
-              Firebase.previewsRef.child('greeting').child(card.val().image).getDownloadURL().then((url) => {
-                data.imageURL = url;
-              });
-            }
             data.cardname = card.key;
             this.cards.push(data);
           });
@@ -278,6 +273,14 @@ export default {
   computed: {
     cardData() {
       return this.cards[this.cardIndex];
+    },
+    cardTitle() {
+      return this.cardData.type === 'business' ?
+        `${this.cardData.firstName} ${this.cardData.lastName}` : `To: ${this.cardData.to}`;
+    },
+    cardSubtitle() {
+      return this.cardData.type === 'business' ?
+        this.cardData.email : `From: ${this.cardData.from}`;
     },
   },
   watch: {
@@ -390,7 +393,7 @@ export default {
   justify-content: space-between;
   height: 40rem;
   width: 8rem;
-  margin-right: 6rem;
+  margin-right: 5rem;
 }
 .actions-add,
 .btn-preview {
@@ -435,7 +438,7 @@ export default {
   box-shadow: $shadow;
   border-radius: $border-radius;
   background-color: $color-white;
-  margin-left: 6rem;
+  margin-left: 5rem;
   &:hover {
     box-shadow: $shadow-hover;
   }
@@ -473,7 +476,6 @@ export default {
 .gallery {
   flex: 1;
   height: 40rem;
-  padding: 0 5rem;
   position: relative;
 }
 .card {
@@ -485,7 +487,7 @@ export default {
   position: relative;
 }
 .card-img {
-  flex: 1;
+  flex: 2;
   background-color: $color-gray;
   background-size: cover;
   background-position: center;
@@ -503,7 +505,7 @@ export default {
   color: $color-dark;
   margin-bottom: 2rem;
 }
-.card-email {
+.card-subtitle {
   color: $color-dark;
   font-size: 1.8rem;
 }
@@ -515,7 +517,7 @@ export default {
 .btn-view {
   position: absolute;
   bottom: 3rem;
-  left: calc(50% - 12rem);
+  left: 50%;
   width: 6rem;
   height: 6rem;
   background-image: url('../assets/icons/eye.svg');
