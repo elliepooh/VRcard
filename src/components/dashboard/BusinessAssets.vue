@@ -48,7 +48,7 @@
         .settings-window.card-photo
           .settings-item
             .item-name Choose photo
-            .item-photo(:style='{ backgroundImage: `url(${info.photoURL})` }')
+            .item-photo(:style='{ backgroundImage: `url(${info.imageURL})` }')
             input.item-upload(name='photo' id='photo' type='file' @change='uploadPhoto')
             label.btn(for='photo') Upload
 
@@ -84,7 +84,7 @@ export default {
       info: {
         color: '',
         panorama: '',
-        photoURL: '',
+        imageURL: '',
       },
 
       previewsNames: [
@@ -140,7 +140,7 @@ export default {
       const task = storageFileRef.put(file);
       task.on('state_changed', () => {
         storageFileRef.getDownloadURL().then((url) => {
-          this.info.photoURL = url;
+          this.info.imageURL = url;
         });
       });
     },

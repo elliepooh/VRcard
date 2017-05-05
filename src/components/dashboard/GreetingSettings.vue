@@ -54,7 +54,7 @@
           .item-line.item-nav
             a.nav-point(
               v-for='preview in previews'
-              @click='info.image = preview.name'
+              @click='changePreview(preview)'
               v-bind:class='{ "point-active": preview.name === info.image }')
 
     .btn(@click='accept') Accept
@@ -80,6 +80,7 @@ export default {
         to: '',
         text: '',
         image: '',
+        imageURL: '',
       },
 
       previewsNames: [
@@ -163,6 +164,10 @@ export default {
       this.warn = [];
       if (!(/^[0-9a-zA-Z_.-]+$/.test(this.info.cardname))) this.warn.push('tooltip');
       if (!this.info.cardname) this.warn.push('cardname');
+    },
+    changePreview(preview) {
+      this.info.image = preview.name;
+      this.info.imageURL = preview.url;
     },
   },
   watch: {
