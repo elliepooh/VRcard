@@ -10,22 +10,25 @@
 <script>
 import Chameleon from './greeting/Chameleon';
 import Saturn from './greeting/Saturn';
+import Sheep from './greeting/Sheep';
 
 export default {
   name: 'greetingCard',
   components: {
     Chameleon,
     Saturn,
+    Sheep,
   },
   data() {
     return {
       cards: [
         'Chameleon',
         'Saturn',
+        'Sheep',
       ],
 
-      currentIndex: 0,
-      currentCard: 'Chameleon',
+      currentIndex: 2,
+      currentCard: 'Sheep',
     };
   },
   methods: {
@@ -50,6 +53,10 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
+}
+.world {
+  width: 100%;
+  height: 100%;
 }
 .nav-arrow {
   position: absolute;
