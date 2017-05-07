@@ -9,7 +9,7 @@ import Three from '../Three';
 import Sheep from './obj/sheep';
 
 export default {
-  name: 'chameleon',
+  name: 'sheep',
   data() {
     return {
       three: null,
@@ -41,18 +41,10 @@ export default {
       this.addLights();
       this.draw();
 
-      document.addEventListener('mousedown', () => {
-        this.mouseDown = true;
-      });
-      document.addEventListener('mouseup', () => {
-        this.mouseDown = false;
-      });
-      document.addEventListener('touchstart', () => {
-        this.mouseDown = true;
-      });
-      document.addEventListener('touchend', () => {
-        this.mouseDown = false;
-      });
+      document.addEventListener('mousedown', this.onMouseDown);
+      document.addEventListener('mouseup', this.onMouseUp);
+      document.addEventListener('touchstart', this.onMouseDown);
+      document.addEventListener('touchend', this.onMouseUp);
     },
     addLights() {
       const ambientLight = new THREE.AmbientLight();
@@ -151,6 +143,12 @@ export default {
       this.sky.rotation.y -= 0.004;
 
       this.three.render();
+    },
+    onMouseDown() {
+      this.mouseDown = true;
+    },
+    onMouseUp() {
+      this.mouseDown = false;
     },
   },
 };

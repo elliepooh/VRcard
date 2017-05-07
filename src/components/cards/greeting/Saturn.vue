@@ -10,7 +10,7 @@ import Three from '../Three';
 import Saturn from './obj/saturn';
 
 export default {
-  name: 'chameleon',
+  name: 'saturn',
   data() {
     return {
       three: null,
@@ -24,8 +24,6 @@ export default {
       container: this.$el,
       color: 0x0E2255,
     });
-    this.width = this.$el.clientWidth;
-    this.height = this.$el.clientHeight;
 
     this.init();
     this.animate();
