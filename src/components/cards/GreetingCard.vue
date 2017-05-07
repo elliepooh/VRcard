@@ -11,6 +11,7 @@
 import Chameleon from './greeting/Chameleon';
 import Saturn from './greeting/Saturn';
 import Sheep from './greeting/Sheep';
+import Watermelon from './greeting/Watermelon';
 
 export default {
   name: 'greetingCard',
@@ -18,6 +19,7 @@ export default {
     Chameleon,
     Saturn,
     Sheep,
+    Watermelon,
   },
   data() {
     return {
@@ -25,10 +27,11 @@ export default {
         'Chameleon',
         'Saturn',
         'Sheep',
+        'Watermelon',
       ],
 
-      currentIndex: 2,
-      currentCard: 'Sheep',
+      currentIndex: 3,
+      currentCard: 'Watermelon',
     };
   },
   methods: {
