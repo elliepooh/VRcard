@@ -73,8 +73,12 @@ export default {
       this.chameleon.group.position.set(3, 3, -10);
       this.three.scene.add(this.chameleon.group);
 
-      this.fly = new Fly();
+      this.fly = new Fly({
+        light: false,
+      });
+      this.fly.group.scale.set(0.05, 0.05, 0.05);
       this.fly.group.position.set(0, 0, 15);
+      this.fly.group.rotation.y = this.rad(90);
       this.three.scene.add(this.fly.group);
 
       this.drawBranch();
@@ -106,7 +110,10 @@ export default {
       this.chameleon.moveHead(this.fly.group.position);
 
       this.fly.moveWings();
-      this.fly.moveFly();
+
+      const timer = Date.now() * 0.0001;
+      this.fly.group.position.x = 4 * Math.cos(timer * 3);
+      this.fly.group.position.y = 5 * Math.sin(timer * 6);
 
       this.three.render();
     },
