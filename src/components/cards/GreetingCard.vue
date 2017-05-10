@@ -12,6 +12,7 @@ import Chameleon from './greeting/Chameleon';
 import Saturn from './greeting/Saturn';
 import Sheep from './greeting/Sheep';
 import Watermelon from './greeting/Watermelon';
+import FireflyJar from './greeting/FireflyJar';
 
 export default {
   name: 'greetingCard',
@@ -20,6 +21,7 @@ export default {
     Saturn,
     Sheep,
     Watermelon,
+    FireflyJar,
   },
   data() {
     return {
@@ -28,10 +30,11 @@ export default {
         'Saturn',
         'Sheep',
         'Watermelon',
+        'FireflyJar',
       ],
 
-      currentIndex: 3,
-      currentCard: 'Watermelon',
+      currentIndex: 4,
+      currentCard: 'FireflyJar',
     };
   },
   methods: {
@@ -56,10 +59,12 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
+  user-select: none;
 }
 .world {
   width: 100%;
   height: 100%;
+  user-select: none;
 }
 .nav-arrow {
   position: absolute;
