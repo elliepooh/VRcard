@@ -3,9 +3,6 @@ import Router from 'vue-router';
 
 import Preview from '@/components/Preview';
 
-import BusinessCard from '@/components/cards/BusinessCard';
-import GreetingCard from '@/components/cards/GreetingCard';
-
 import SignIn from '@/components/SignIn';
 import Dashboard from '@/components/Dashboard';
 
@@ -23,17 +20,6 @@ export default new Router({
       path: '/',
       name: 'preview',
       component: Preview,
-      children: [
-        {
-          path: 'greeting-card',
-          name: 'greeting-card',
-          component: GreetingCard,
-        }, {
-          path: 'business-card',
-          name: 'business-card',
-          component: BusinessCard,
-        },
-      ],
     }, {
       path: '/signin',
       name: 'signin',
