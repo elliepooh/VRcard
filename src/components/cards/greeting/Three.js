@@ -2,6 +2,7 @@ import * as THREE from 'three';
 
 const OrbitControls = require('three-orbit-controls')(THREE);
 
+/* eslint-disable no-param-reassign */
 export default class Three {
   constructor({
     container = null,
@@ -34,7 +35,7 @@ export default class Three {
     this.camera.position.set(this.cameraPositionX, this.cameraPositionY, this.cameraPositionZ);
     this.camera.lookAt(this.scene.position);
 
-    this.renderer = new THREE.WebGLRenderer({ alpha: this.transparent });
+    this.renderer = new THREE.WebGLRenderer({ alpha: this.transparent, antialias: true });
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(this.width, this.height);
     this.renderer.setClearColor(this.color, this.alpha);

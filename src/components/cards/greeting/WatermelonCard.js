@@ -57,6 +57,7 @@ export default class WatermelonCard {
     this.three.render();
   }
   onMouseMove(event) {
+    event.preventDefault();
     this.mouseX = ((event.clientX / this.width) * 2) - 1;
     this.mouseY = -((event.clientY / this.height) * 2) + 1;
 

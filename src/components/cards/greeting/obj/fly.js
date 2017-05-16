@@ -60,7 +60,7 @@ export default class Fly {
     }));
     flyLight.rotation.y = 45 * (Math.PI / 180);
 
-    const light = new THREE.PointLight(this.lightColor, 2, 200);
+    const light = new THREE.PointLight(this.lightColor, 2, 400);
     light.add(flyLight);
     light.position.set(0, -12, 0);
     light.castShadow = true;

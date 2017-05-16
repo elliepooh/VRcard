@@ -9,7 +9,7 @@ export default class ChameleonCard {
   constructor(container) {
     this.three = new Three({
       container,
-      color: 0xF2A9B4,
+      color: 0xFFCAD6,
       cameraPositionX: 30,
       cameraPositionY: 10,
       cameraPositionZ: 10,
@@ -66,7 +66,7 @@ export default class ChameleonCard {
     const branch = new THREE.Mesh(
       new THREE.CylinderGeometry(0.76, 1.12, 2.14, 5),
       new THREE.MeshStandardMaterial({
-        color: 0x17B26F,
+        color: 0xF76095,
         roughness: 1,
         shading: THREE.FlatShading,
       }),

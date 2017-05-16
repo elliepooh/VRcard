@@ -125,9 +125,11 @@ export default class SheepCard {
     this.three.render();
   }
   onMouseDown() {
+    event.preventDefault();
     this.mouseDown = true;
   }
   onMouseUp() {
+    event.preventDefault();
     this.mouseDown = false;
   }
 }

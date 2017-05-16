@@ -8,7 +8,7 @@ export default class Chameleon {
     this.group.rotation.set(this.rad(18.84), 0, this.rad(2.2));
 
     this.material = new THREE.MeshStandardMaterial({
-      color: 0x1CCCA3,
+      color: 0x5CE8D7,
       roughness: 1,
       shading: THREE.FlatShading,
     });
