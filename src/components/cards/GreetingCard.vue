@@ -1,10 +1,18 @@
 <template lang='pug'>
   .card
-    .world
+    .world(@click='showMessage = false')
     .letter(@click='openLetter')
     a.nav-btn.btn-prev(@click='prevCard')
     a.nav-btn.btn-next(@click='nextCard')
     .message(v-if='showMessage')
+      .message-info
+        span From: Neo
+        span To: Mr. Smith
+      h2.message-title Happy birthday!
+      p.message-description
+        | Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+        | eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+        | ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.
 </template>
 
 <script>
@@ -33,7 +41,7 @@ export default {
       card: null,
 
       letter: null,
-      showMessage: false,
+      showMessage: true,
     };
   },
   mounted() {
@@ -74,25 +82,22 @@ export default {
 <style lang='scss'>
 @import '~global';
 
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300i,400&subset=cyrillic');
+@import url('https://fonts.googleapis.com/css?family=Playfair+Display&subset=cyrillic');
+
+
+$line-color: rgba(37, 189, 232, 0.3);
+
 .card {
   width: 100%;
   height: 100%;
   position: relative;
+  font-family: 'Open Sans', sans-serif;
 }
 .world {
   width: 100%;
   height: 100%;
   position: absolute;
-}
-.message-box {
-  position: absolute;
-  top: 20%;
-  left: 20rem;
-  display: flex;
-  flex-direction: column;
-  border-radius: $border-radius * 2;
-  background-color: rgba(0, 0, 0, 0.2);
-  padding: 3rem;
 }
 .nav-btn {
   position: absolute;
@@ -112,7 +117,6 @@ export default {
 .btn-next {
   right: 3rem;
   background: $color-white url('../../assets/icons/arrowNext.svg') 80% center / 80% no-repeat;
-
 }
 .letter {
   position: absolute;
@@ -120,13 +124,43 @@ export default {
   height: 25rem;
   bottom: 8rem;
   left: 8rem;
+  cursor: pointer;
 }
 .message {
-  width: 40rem;
-  height: 30rem;
-  background-color: #ffffff;
+  width: 60rem;
+  padding: 4rem;
   position: absolute;
-  top: calc(50% - 15rem);
-  left: calc(50% - 20rem);
+  top: calc(50% - 22rem);
+  left: 0;
+  background-color: $color-white;
+  border-radius: $border-radius;
+  color: $color-dark;
+}
+.message-info {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 4rem;
+  font-style: italic;
+  font-weight: 300;
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: -1rem;
+    left: 0;
+    width: 10%;
+    border-bottom: 2px solid $line-color;
+  }
+}
+.message-title {
+  font-family: 'Playfair Display', serif;
+  margin-bottom: 2rem;
+  font-size: 4rem;
+  letter-spacing: 0.2rem;
+}
+.message-description {
+  line-height: 3rem;
+  background-image: linear-gradient(transparent 2.8rem, $line-color 2px);
+  background-size: 100% 3rem;
 }
 </style>

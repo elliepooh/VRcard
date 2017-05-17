@@ -21,7 +21,7 @@ export default class Letter {
     this.three.init();
 
     this.group = new THREE.Group();
-    this.group.position.y = -2;
+    this.group.position.y = -1;
     this.three.scene.add(this.group);
 
     this.vAngle = 0;
