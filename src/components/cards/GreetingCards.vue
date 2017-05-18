@@ -4,15 +4,16 @@
     .letter(@click='openLetter')
     a.nav-btn.btn-prev(@click='prevCard')
     a.nav-btn.btn-next(@click='nextCard')
-    .message(v-if='showMessage')
-      .message-info
-        span From: Neo
-        span To: Mr. Smith
-      h2.message-title Happy birthday!
-      p.message-description
-        | Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-        | eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-        | ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.
+    transition(name='flip')
+      .message(v-if='showMessage')
+        .message-info
+          span From: Neo
+          span To: Mr. Smith
+        h2.message-title Happy birthday!
+        p.message-description
+          | Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+          | eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+          | ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.
 </template>
 
 <script>
@@ -25,7 +26,7 @@ import FireflyCard from './greeting/FireflyCard';
 import Letter from './greeting/Letter';
 
 export default {
-  name: 'greetingCard',
+  name: 'greetingCards',
   data() {
     return {
       cards: [
@@ -41,7 +42,7 @@ export default {
       card: null,
 
       letter: null,
-      showMessage: true,
+      showMessage: false,
     };
   },
   mounted() {
@@ -79,7 +80,7 @@ export default {
 };
 </script>
 
-<style lang='scss'>
+<style lang='scss' scoped>
 @import '~global';
 
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:300i,400&subset=cyrillic');
@@ -127,10 +128,10 @@ $line-color: rgba(37, 189, 232, 0.3);
   cursor: pointer;
 }
 .message {
-  width: 60rem;
+  width: 50rem;
   padding: 4rem;
   position: absolute;
-  top: calc(50% - 22rem);
+  top: calc(50% - 25rem);
   left: 0;
   background-color: $color-white;
   border-radius: $border-radius;
@@ -162,5 +163,34 @@ $line-color: rgba(37, 189, 232, 0.3);
   line-height: 3rem;
   background-image: linear-gradient(transparent 2.8rem, $line-color 2px);
   background-size: 100% 3rem;
+}
+.flip-enter-active,
+.flip-leave-active {
+  animation-duration: 0.5s;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-in-out;
+  transform-origin: 0% 50%;
+}
+.flip-enter-active {
+  animation-name: flip-open;
+}
+.flip-leave-active {
+  animation-name: flip-close;
+}
+@keyframes flip-open {
+  0% {
+    transform: perspective(1000px) rotate3d(0, 1, 0, 90deg);
+  }
+  100% {
+    transform: perspective(1000px) rotate3d(0, 1, 0, 0deg);
+  }
+}
+@keyframes flip-close {
+  0% {
+    transform: perspective(1000px) rotate3d(0, 1, 0, 0deg);
+  }
+  100% {
+    transform: perspective(1000px) rotate3d(0, 1, 0, 90deg);
+  }
 }
 </style>
