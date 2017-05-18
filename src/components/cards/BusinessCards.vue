@@ -2,17 +2,26 @@
   .card
     a.nav-btn.btn-prev(@click='prevCard')
     a.nav-btn.btn-next(@click='nextCard')
+
+    component(:is='currentCard')
 </template>
 
 <script>
+import 'aframe';
+import CityCard from './business/CityCard';
+
 export default {
-  name: 'businessCard',
+  name: 'businessCards',
+  components: {
+    CityCard,
+  },
   data() {
     return {
-      cards: [],
+      cards: [
+        'CityCard',
+      ],
 
-      index: 0,
-      card: null,
+      currentCard: 'CityCard',
     };
   },
   methods: {
@@ -22,7 +31,9 @@ export default {
 };
 </script>
 
-<style>
+<style lang='scss' scoped>
+@import '~global';
+
 .card {
   width: 100%;
   height: 100%;

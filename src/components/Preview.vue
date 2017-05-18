@@ -6,7 +6,7 @@
         h1.logo-title IMENGINE
       .switch-box
         span.switch-label Greeting
-        .switch-slider(:class='{ "switch-business": currentCardType === "BusinessCard" }')
+        .switch-slider(:class='{ "switch-business": currentCardType === "BusinessCards" }')
           .switch-point(@click='switchCardType')
         span.switch-label Business
       router-link.dashboard-link(to='/signin')
@@ -14,26 +14,26 @@
 </template>
 
 <script>
-import GreetingCard from './cards/GreetingCard';
-import BusinessCard from './cards/BusinessCard';
+import GreetingCards from './cards/GreetingCards';
+import BusinessCards from './cards/BusinessCards';
 
 export default {
   name: 'preview',
   components: {
-    GreetingCard,
-    BusinessCard,
+    GreetingCards,
+    BusinessCards,
   },
   data() {
     return {
-      currentCardType: 'GreetingCard',
+      currentCardType: 'BusinessCards',
     };
   },
   methods: {
     switchCardType() {
-      if (this.currentCardType === 'GreetingCard') {
-        this.currentCardType = 'BusinessCard';
+      if (this.currentCardType === 'GreetingCards') {
+        this.currentCardType = 'BusinessCards';
       } else {
-        this.currentCardType = 'GreetingCard';
+        this.currentCardType = 'GreetingCards';
       }
     },
   },
