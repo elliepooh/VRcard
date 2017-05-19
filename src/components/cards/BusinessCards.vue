@@ -9,19 +9,22 @@
 <script>
 import 'aframe';
 import CityCard from './business/CityCard';
+import MountainsCard from './business/MountainsCard';
 
 export default {
   name: 'businessCards',
   components: {
     CityCard,
+    MountainsCard,
   },
   data() {
     return {
       cards: [
         'CityCard',
+        'MountainsCard',
       ],
 
-      currentCard: 'CityCard',
+      currentCard: 'MountainsCard',
     };
   },
   methods: {

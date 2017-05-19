@@ -21,6 +21,7 @@
     "vuefire": "^1.4.2"
   },
   "devDependencies": {
+    "aframe-gradient-sky": "^1.0.4",
     "autoprefixer": "^7.0.1",
     "babel-core": "^6.24.1",
     "babel-eslint": "^7.2.3",
