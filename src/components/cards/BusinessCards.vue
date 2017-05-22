@@ -10,26 +10,41 @@
 import 'aframe';
 import CityCard from './business/CityCard';
 import MountainsCard from './business/MountainsCard';
+import WinterCard from './business/WinterCard';
+import FieldCard from './business/FieldCard';
 
 export default {
   name: 'businessCards',
   components: {
     CityCard,
     MountainsCard,
+    WinterCard,
+    FieldCard,
   },
   data() {
     return {
       cards: [
         'CityCard',
         'MountainsCard',
+        'WinterCard',
+        'FieldCard',
       ],
 
-      currentCard: 'MountainsCard',
+      currentIndex: 2,
+      currentCard: 'WinterCard',
     };
   },
   methods: {
-    prevCard() {},
-    nextCard() {},
+    prevCard() {
+      this.currentIndex = this.currentIndex === 0 ?
+        this.cards.length - 1 : this.currentIndex - 1;
+      this.currentCard = this.cards[this.currentIndex];
+    },
+    nextCard() {
+      this.currentIndex = this.currentIndex === this.cards.length - 1 ?
+        0 : this.currentIndex + 1;
+      this.currentCard = this.cards[this.currentIndex];
+    },
   },
 };
 </script>
@@ -49,6 +64,7 @@ export default {
   height: 8rem;
   cursor: pointer;
   box-shadow: $shadow;
+  z-index: 200;
   &:hover {
     box-shadow: $shadow-hover;
   }
