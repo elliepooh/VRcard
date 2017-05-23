@@ -8,11 +8,11 @@
       img#instagram(src='~@/assets/panoramas/socials/instagram.png')
       img#email(src='~@/assets/panoramas/socials/email.png')
 
-      a-mixin#social(class='link' geometry='primitive: circle; radius: 0.06'
-                    material='color: #397896; transparent: true;')
+      a-mixin#social(class='link' geometry='primitive: circle; radius: 0.07'
+                    material='color: #0083B7; transparent: true')
 
     a-entity(geometry='primitive: plane; width: 2.8; height: 1.4' position='0 2 0'
-            material='shader: gradient; topColor: 156, 210, 237; bottomColor: 200, 0, 70; offset: 0.0001')
+            material='shader: gradient; topColor: 237, 247, 252; bottomColor: 61, 183, 255; offset: 0.0001')
 
       a-circle(radius='0.4' position='0.8 0 0.01' src='#photo')
 
@@ -39,9 +39,5 @@ import 'aframe-gradient-sky';
 
 export default {
   name: 'mountainsCard',
-  data() {
-    return {};
-  },
-  methods: {},
 };
 </script>
