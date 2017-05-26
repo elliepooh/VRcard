@@ -25,7 +25,7 @@ export default {
   },
   data() {
     return {
-      currentCardType: 'BusinessCards',
+      currentCardType: 'GreetingCards',
     };
   },
   methods: {
