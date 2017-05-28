@@ -22,7 +22,6 @@ import SaturnCard from './greeting/SaturnCard';
 import SheepCard from './greeting/SheepCard';
 import WatermelonCard from './greeting/WatermelonCard';
 import FireflyCard from './greeting/FireflyCard';
-import BearCard from './greeting/BearCard';
 
 import Letter from './greeting/Letter';
 
@@ -36,11 +35,10 @@ export default {
         SheepCard,
         WatermelonCard,
         FireflyCard,
-        BearCard,
       ],
 
       worldContainer: null,
-      index: 5,
+      index: 0,
       card: null,
 
       letter: null,
