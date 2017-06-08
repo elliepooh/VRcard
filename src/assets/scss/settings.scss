@@ -115,12 +115,10 @@ $color-text: darken($color-darkgray, 20);
 }
 .item-line {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 .item-nav {
-  width: 20%;
-  margin: 0 auto 2rem;
+  justify-content: center;
 }
 .nav-point {
   width: 2rem;
@@ -128,6 +126,9 @@ $color-text: darken($color-darkgray, 20);
   background-color: $color-darkgray;
   border-radius: 50%;
   cursor: pointer;
+  &:not(:last-of-type) {
+    margin-right: 2rem;
+  }
 }
 .point-active {
   background-color: $color-main;

@@ -84,8 +84,11 @@ export default {
       },
 
       previewsNames: [
-        'chameleon.gif',
-        'saturn.gif',
+        'chameleon.png',
+        'saturn.png',
+        'sheep.png',
+        'watermelon.png',
+        'fireflies.png',
       ],
       previews: [],
 

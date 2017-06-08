@@ -40,7 +40,7 @@
           .card-content
             h3.card-title {{ cardTitle }}
             span.card-subtitle {{ cardSubtitle }}
-            p.card-description {{ cardData.description }} {{ cardData.description }}
+            p.card-description {{ cardData.description }} {{ cardData.text }}
           a.btn.btn-view
 
       router-view(:key='$route.path')
@@ -187,8 +187,8 @@ export default {
             cardDataKeys.forEach((key) => {
               const dbKey = card.child(key).val();
               if (dbKey) {
-                if (key === 'description' && dbKey.length > 200) {
-                  data[key] = dbKey.slice(0, dbKey.slice(0, 200).lastIndexOf('.') + 1);
+                if ((key === 'description' || key === 'text') && dbKey.length > 400) {
+                  data[key] = `${dbKey.slice(0, dbKey.slice(0, 400).lastIndexOf(' '))}...`;
                 } else {
                   data[key] = dbKey;
                 }
@@ -498,16 +498,16 @@ export default {
   padding: 3rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 .card-title {
   font-size: 2.6rem;
   color: $color-dark;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 .card-subtitle {
   color: $color-dark;
   font-size: 1.8rem;
+  margin-bottom: 3rem;
 }
 .card-description {
   overflow: hidden;
