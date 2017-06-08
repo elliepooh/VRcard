@@ -11,7 +11,6 @@ import 'aframe';
 import CityCard from './business/CityCard';
 import MountainsCard from './business/MountainsCard';
 import WinterCard from './business/WinterCard';
-import FieldCard from './business/FieldCard';
 
 export default {
   name: 'businessCards',
@@ -19,7 +18,6 @@ export default {
     CityCard,
     MountainsCard,
     WinterCard,
-    FieldCard,
   },
   data() {
     return {
@@ -27,11 +25,10 @@ export default {
         'CityCard',
         'MountainsCard',
         'WinterCard',
-        'FieldCard',
       ],
 
-      currentIndex: 2,
-      currentCard: 'WinterCard',
+      currentIndex: 0,
+      currentCard: 'CityCard',
     };
   },
   methods: {
