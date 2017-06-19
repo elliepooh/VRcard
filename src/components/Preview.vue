@@ -10,7 +10,8 @@
           .switch-point(@click='switchCardType')
         span.switch-label Business
       router-link.dashboard-link(to='/signin')
-    component(:is='currentCardType')
+    transition(name='slide' mode='out-in')
+      component(:is='currentCardType')
 </template>
 
 <script>
@@ -46,6 +47,7 @@ export default {
 .preview {
   width: 100%;
   height: 100%;
+  background-color: $color-main;
 }
 .header {
   position: absolute;

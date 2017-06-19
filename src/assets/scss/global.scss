@@ -70,3 +70,44 @@ $border-radius: 3px;
   transform: translateY(-8rem);
   opacity: 0;
 }
+
+.slide-enter-active,
+.slide-leave-active, {
+  transition: all .4s ease-in;
+}
+.slide-enter {
+  transform: translateX(-100%);
+}
+.slide-leave-to {
+  transform: translateX(100%);
+}
+
+.flip-enter-active,
+.flip-leave-active {
+  animation-duration: 0.5s;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-in-out;
+  transform-origin: 0% 50%;
+}
+.flip-enter-active {
+  animation-name: flip-open;
+}
+.flip-leave-active {
+  animation-name: flip-close;
+}
+@keyframes flip-open {
+  0% {
+    transform: perspective(1000px) rotate3d(0, 1, 0, 90deg);
+  }
+  100% {
+    transform: perspective(1000px) rotate3d(0, 1, 0, 0deg);
+  }
+}
+@keyframes flip-close {
+  0% {
+    transform: perspective(1000px) rotate3d(0, 1, 0, 0deg);
+  }
+  100% {
+    transform: perspective(1000px) rotate3d(0, 1, 0, 90deg);
+  }
+}
