@@ -1,118 +1,137 @@
-import * as THREE from 'three';
-import Three from './Three';
+import {
+  Scene,
+  PerspectiveCamera,
+  WebGLRenderer,
+  PCFSoftShadowMap,
+  HemisphereLight,
+  DirectionalLight,
+  Mesh,
+  Group,
+  MeshStandardMaterial,
+  BoxGeometry,
+  Shape,
+  Vector2,
+  ExtrudeGeometry,
+  FlatShading,
+} from 'three';
 
 /* eslint-disable no-param-reassign */
 export default class Letter {
   constructor(container) {
-    this.three = new Three({
-      container,
-      transparent: true,
-      alpha: 0,
-      cameraPositionX: 0,
-      cameraPositionY: 0,
-      cameraPositionZ: 10,
-    });
-    this.width = container.clientWidth;
-    this.height = container.clientHeight;
+    this.container = container;
+
+    this.vAngle = 0;
+    this.isOpen = false;
 
     this.init();
   }
   init() {
-    this.three.init();
+    this.width = this.container.clientWidth;
+    this.height = this.container.clientHeight;
 
-    this.group = new THREE.Group();
-    this.group.position.y = -1;
-    this.three.scene.add(this.group);
+    this.scene = new Scene();
+    this.camera = new PerspectiveCamera(75, this.width / this.height, 0.1, 1000);
+    this.camera.position.set(0, 0, 10);
+    this.camera.lookAt(this.scene.position);
 
-    this.vAngle = 0;
-    this.isOpen = false;
+    this.renderer = new WebGLRenderer({ alpha: true, antialias: true });
+    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.setSize(this.width, this.height);
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = PCFSoftShadowMap;
+
+    this.container.appendChild(this.renderer.domElement);
+
+    window.addEventListener('resize', this.onResize);
 
     this.addLights();
     this.draw();
 
     this.group.traverse((object) => {
-      if (object instanceof THREE.Mesh) {
-        object.castShadow = true;
-        object.receiveShadow = true;
-      }
+      object.castShadow = true;
+      object.receiveShadow = true;
     });
   }
   addLights() {
-    const light = new THREE.HemisphereLight();
-    this.three.scene.add(light);
+    const light = new HemisphereLight();
+    this.scene.add(light);
 
-    const directLight1 = new THREE.DirectionalLight();
+    const directLight1 = new DirectionalLight();
     directLight1.castShadow = true;
     directLight1.position.set(-10, 5, 8);
-    this.three.scene.add(directLight1);
+    this.scene.add(directLight1);
   }
   draw() {
-    const bodyMaterial = new THREE.MeshStandardMaterial({
+    this.group = new Group();
+    this.group.position.y = -1;
+    this.scene.add(this.group);
+
+    const bodyMaterial = new MeshStandardMaterial({
       color: 0x1CB3DD,
       roughness: 1,
-      shading: THREE.FlatShading,
+      shading: FlatShading,
     });
-    const bodyGeometry = new THREE.BoxGeometry(8, 6, 2);
-    const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    const bodyGeometry = new BoxGeometry(8, 6, 2);
+    const body = new Mesh(bodyGeometry, bodyMaterial);
     this.group.add(body);
 
-    const upperPartMaterial = new THREE.MeshStandardMaterial({
+    const upperPartMaterial = new MeshStandardMaterial({
       color: 0xF4FCFF,
       roughness: 1,
-      shading: THREE.FlatShading,
+      shading: FlatShading,
     });
-    const upperPartShape = new THREE.Shape([
-      new THREE.Vector2(-4, 0),
-      new THREE.Vector2(4, 0),
-      new THREE.Vector2(0, 4),
+    const upperPartShape = new Shape([
+      new Vector2(-4, 0),
+      new Vector2(4, 0),
+      new Vector2(0, 4),
     ]);
-    const upperPartGeometry = new THREE.ExtrudeGeometry(upperPartShape, {
+    const upperPartGeometry = new ExtrudeGeometry(upperPartShape, {
       amount: 1,
       bevelSegments: 0,
       bevelSize: 0,
       bevelThickness: 0,
     });
 
-    this.upperPart = new THREE.Mesh(upperPartGeometry, upperPartMaterial);
+    this.upperPart = new Mesh(upperPartGeometry, upperPartMaterial);
     this.upperPart.position.set(0, 3, 1);
     this.upperPart.rotation.z = Math.PI;
     this.upperPart.name = 'letterPart';
     this.group.add(this.upperPart);
 
-    const partMaterial = new THREE.MeshStandardMaterial({
+    const partMaterial = new MeshStandardMaterial({
       color: 0xF24682,
       roughness: 1,
-      shading: THREE.FlatShading,
+      shading: FlatShading,
     });
 
-    const bottomPartShape = new THREE.Shape([
-      new THREE.Vector2(-4, 0),
-      new THREE.Vector2(4, 0),
-      new THREE.Vector2(0, 3),
+    const bottomPartShape = new Shape([
+      new Vector2(-4, 0),
+      new Vector2(4, 0),
+      new Vector2(0, 3),
     ]);
-    const bottomPartGeometry = new THREE.ExtrudeGeometry(bottomPartShape, {
+    const bottomPartGeometry = new ExtrudeGeometry(bottomPartShape, {
       amount: 0.5,
       bevelSegments: 0,
       bevelSize: 0,
       bevelThickness: 0,
     });
-    const bottomPart = new THREE.Mesh(bottomPartGeometry, partMaterial);
+    const bottomPart = new Mesh(bottomPartGeometry, partMaterial);
     bottomPart.position.set(0, -3, 1);
     this.group.add(bottomPart);
 
-    const partShape = new THREE.Shape([
-      new THREE.Vector2(-3, 0),
-      new THREE.Vector2(3, 0),
-      new THREE.Vector2(0, 4),
+    const partShape = new Shape([
+      new Vector2(-3, 0),
+      new Vector2(3, 0),
+      new Vector2(0, 4),
     ]);
-    const partGeometry = new THREE.ExtrudeGeometry(partShape, {
+    const partGeometry = new ExtrudeGeometry(partShape, {
       amount: 0.2,
       bevelSegments: 0,
       bevelSize: 0,
       bevelThickness: 0,
     });
 
-    const rightPart = new THREE.Mesh(partGeometry, partMaterial);
+    const rightPart = new Mesh(partGeometry, partMaterial);
     rightPart.position.set(-4, 0, 1);
     rightPart.rotation.z = -Math.PI / 2;
     this.group.add(rightPart);
@@ -141,6 +160,6 @@ export default class Letter {
       this.upperPart.rotation.x += Math.sin(this.vAngle);
     }
 
-    this.three.render();
+    this.renderer.render(this.scene, this.camera);
   }
 }

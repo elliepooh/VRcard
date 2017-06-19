@@ -1,4 +1,13 @@
-import * as THREE from 'three';
+import {
+  Group,
+  Mesh,
+  CylinderGeometry,
+  MeshStandardMaterial,
+  BoxGeometry,
+  Matrix4,
+  FlatShading,
+  PointLight,
+} from 'three';
 
 export default class Fly {
   constructor({
@@ -7,7 +16,7 @@ export default class Fly {
     wingColor = 0xffffff,
     lightColor = 0xFFFF7C,
   }) {
-    this.group = new THREE.Group();
+    this.group = new Group();
 
     this.bodyColor = bodyColor;
     this.wingColor = wingColor;
@@ -23,28 +32,28 @@ export default class Fly {
     }
   }
   drawBody() {
-    const flyGeometry = new THREE.CylinderGeometry(12, 16, 18, 4);
-    const flyMaterial = new THREE.MeshStandardMaterial({
+    const flyGeometry = new CylinderGeometry(12, 16, 18, 4);
+    const flyMaterial = new MeshStandardMaterial({
       color: this.bodyColor,
       roughness: 1,
-      shading: THREE.FlatShading,
+      shading: FlatShading,
     });
-    const fly = new THREE.Mesh(flyGeometry, flyMaterial);
+    const fly = new Mesh(flyGeometry, flyMaterial);
     fly.rotation.y = 45 * (Math.PI / 180);
     this.group.add(fly);
   }
   drawWings() {
-    this.rightWing = new THREE.Mesh(
-      new THREE.BoxGeometry(5, 12, 12),
-      new THREE.MeshStandardMaterial({
+    this.rightWing = new Mesh(
+      new BoxGeometry(5, 12, 12),
+      new MeshStandardMaterial({
         color: this.wingColor,
         roughness: 1,
-        shading: THREE.FlatShading,
+        shading: FlatShading,
       }),
     );
     this.rightWing.position.set(8, 2, 0);
     this.rightWing.rotation.z = Math.PI / 4;
-    this.rightWing.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, -6, 0));
+    this.rightWing.geometry.applyMatrix(new Matrix4().makeTranslation(0, -6, 0));
     this.group.add(this.rightWing);
 
     this.leftWing = this.rightWing.clone();
@@ -53,14 +62,14 @@ export default class Fly {
     this.group.add(this.leftWing);
   }
   drawLight() {
-    const geometry = new THREE.CylinderGeometry(16, 8, 6, 4);
-    const flyLight = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
+    const geometry = new CylinderGeometry(16, 8, 6, 4);
+    const flyLight = new Mesh(geometry, new MeshStandardMaterial({
       color: this.lightColor,
-      shading: THREE.FlatShading,
+      shading: FlatShading,
     }));
     flyLight.rotation.y = 45 * (Math.PI / 180);
 
-    const light = new THREE.PointLight(this.lightColor, 2, 400);
+    const light = new PointLight(this.lightColor, 2, 400);
     light.add(flyLight);
     light.position.set(0, -12, 0);
     light.castShadow = true;

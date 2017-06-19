@@ -88,7 +88,6 @@ export default {
         'saturn.png',
         'sheep.png',
         'watermelon.png',
-        'fireflies.png',
       ],
       previews: [],
 
