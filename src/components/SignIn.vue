@@ -145,8 +145,7 @@ export default {
             default:
               this.notificationMessage = error.code;
           }
-        },
-      );
+        });
     },
     signIn() {
       Firebase.auth.signInWithEmailAndPassword(
@@ -163,8 +162,7 @@ export default {
             default:
               this.notificationMessage = error.code;
           }
-        },
-      );
+        });
     },
   },
 };
