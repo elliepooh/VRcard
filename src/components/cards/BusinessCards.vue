@@ -3,44 +3,39 @@
     a.nav-btn.btn-prev(@click='prevCard')
     a.nav-btn.btn-next(@click='nextCard')
 
-    component(:is='currentCard')
+    component(:is='cards[index]')
 </template>
 
 <script>
 import 'aframe';
-import CityCard from './business/CityCard';
-import MountainsCard from './business/MountainsCard';
-import WinterCard from './business/WinterCard';
+import City from './business/City';
+import Mountains from './business/Mountains';
+import Winter from './business/Winter';
 
 export default {
   name: 'businessCards',
   components: {
-    CityCard,
-    MountainsCard,
-    WinterCard,
+    City,
+    Mountains,
+    Winter,
   },
   data() {
     return {
       cards: [
-        'CityCard',
-        'MountainsCard',
-        'WinterCard',
+        'City',
+        'Mountains',
+        'Winter',
       ],
 
-      currentIndex: 0,
-      currentCard: 'CityCard',
+      index: 0,
     };
   },
   methods: {
     prevCard() {
-      this.currentIndex = this.currentIndex === 0 ?
-        this.cards.length - 1 : this.currentIndex - 1;
-      this.currentCard = this.cards[this.currentIndex];
+      this.index = this.index === 0 ? this.cards.length - 1 : this.index - 1;
     },
     nextCard() {
-      this.currentIndex = this.currentIndex === this.cards.length - 1 ?
-        0 : this.currentIndex + 1;
-      this.currentCard = this.cards[this.currentIndex];
+      this.index = this.index === this.cards.length - 1 ? 0 : this.index + 1;
     },
   },
 };

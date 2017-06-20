@@ -38,9 +38,5 @@
 <script>
 export default {
   name: 'cityCard',
-  data() {
-    return {};
-  },
-  methods: {},
 };
 </script>

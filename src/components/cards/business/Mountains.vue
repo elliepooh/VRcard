@@ -36,6 +36,6 @@
 
 <script>
 export default {
-  name: 'mountainsCard',
+  name: 'mountains',
 };
 </script>

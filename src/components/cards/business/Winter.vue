@@ -38,6 +38,6 @@
 
 <script>
 export default {
-  name: 'winterCard',
+  name: 'winter',
 };
 </script>
